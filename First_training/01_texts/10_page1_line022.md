@@ -1,0 +1,6 @@
+<tabe>
+<tr>
+<td>QUALIFICAÇÃO N (CARACTERÍSTICAS):</td>
+<td>(CARACTERÍSTICAS) COMO | DEVE SER (IMAGENS)</td>
+</tr>
+</tabe>

@@ -1,0 +1,8 @@
+<tabe>
+<tr>
+<td>FISIOPATOLOGIA</td>
+<td>X</td>
+<td>INSEGNANTI</td>
+<td>(EVIDENZIATO)</td>
+</tr>
+</tabe>

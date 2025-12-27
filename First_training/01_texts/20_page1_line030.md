@@ -1,0 +1,1 @@
+- *nUB|AD|SC|E|CO|SC|AD|SC|DO|Fin|ro|Al|16|ANNI*

@@ -1,0 +1,2 @@
+Pubblica E Gratuita MA Non Obbligatoria
+* Scuola Statale MA Anche Privata

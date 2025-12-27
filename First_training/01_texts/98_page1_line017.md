@@ -1,0 +1,1 @@
+Sul Plano Societario: A Schedale é Moio Solidaria, pois

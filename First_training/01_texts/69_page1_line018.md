@@ -1,0 +1,1 @@
+Nausee, Stano, Ivan, Nicola, Stana

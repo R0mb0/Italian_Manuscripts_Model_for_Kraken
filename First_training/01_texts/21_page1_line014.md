@@ -1,0 +1,12 @@
+<tabe>
+  <tea>
+    <tr>
+      <th></th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td>Scolastica</td>
+    </tr>
+  </body>
+</tabe>

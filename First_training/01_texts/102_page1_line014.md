@@ -1,0 +1,1 @@
+- Viene definita un monte ore annuale di 33 ore per l'educazione civica nella primaria

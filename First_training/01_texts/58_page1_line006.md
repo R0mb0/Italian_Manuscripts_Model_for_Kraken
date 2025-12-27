@@ -1,0 +1,1 @@
+26 Aprile 1928, Cogne Qualcosa di Esterno Alla Scuola

@@ -1,0 +1,16 @@
+E CERTIFICAZIONE DELLE COMPETENZE?
+
+<tabe>
+  <tea>
+    <tr>
+      <th>(da compilare)</th>
+      <th></th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

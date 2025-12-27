@@ -1,0 +1,14 @@
+SURPRISE DIAGRAM (PICTURE SHOWS WHAT CAN OCCUR IN SEQUENCE)
+
+<tabe>
+  <tea>
+    <tr>
+      <th></th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

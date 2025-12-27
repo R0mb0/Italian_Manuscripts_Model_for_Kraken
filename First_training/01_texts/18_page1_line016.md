@@ -1,0 +1,24 @@
+```html
+<table>
+  <thead>
+    <tr>
+      <th>13399</th>
+      <th>L. 275/1999</th>
+      <th>DATA DI IDENTITA'</th>
+      <th>COGNOME</th>
+      <th>NOME</th>
+      <th>DATA</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+```

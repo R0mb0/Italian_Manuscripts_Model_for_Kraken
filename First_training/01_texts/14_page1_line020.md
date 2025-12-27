@@ -1,0 +1,3 @@
+ELAROSBICE ACETATE
+
+EUA NORMANO A. (cont. M. Niccolò) della Società

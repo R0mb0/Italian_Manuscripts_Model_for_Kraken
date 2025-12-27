@@ -1,0 +1,1 @@
+Art. (5): Il momento delle pandemie durate il medioevo.

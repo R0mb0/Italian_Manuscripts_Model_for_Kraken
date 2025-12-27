@@ -1,0 +1,2 @@
+- *Special*
+- *Perirla Frutescente* (Gu Doblone), (Cross pollinazione), Ola, Ginseng, KF

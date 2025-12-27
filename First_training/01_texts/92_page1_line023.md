@@ -1,0 +1,1 @@
+processo di valutazione, che non si può esaurire in un momento

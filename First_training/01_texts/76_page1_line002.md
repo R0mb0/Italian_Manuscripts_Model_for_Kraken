@@ -1,0 +1,18 @@
+<tabe>
+<tea>
+<tr>
+<th></th>
+<th>YES</th>
+<th>NO</th>
+<th>N/A</th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>*Is tris a **SOLO** deploramene?*</td>
+<td>☐</td>
+<td>☐</td>
+<td>☑</td>
+</tr>
+</body>
+</tabe>

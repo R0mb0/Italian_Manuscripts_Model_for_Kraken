@@ -1,0 +1,2 @@
+- al minuto 27:53 pale delle differenziazioni per le scuole secondarie
+- Riparto al minuto 43:44

@@ -1,0 +1,18 @@
+<tabe>
+<tr>
+<td>NGLESE</td>
+<td></td>
+</tr>
+<tr>
+<td>SEREGLI</td>
+<td>→ VIOLARE IL PIANO DI CORRESPONSABILITÀ DA LUCIO A SAN BOVI</td>
+</tr>
+<tr>
+<td>DI FINE</td>
+<td></td>
+</tr>
+<tr>
+<td>Sd 2 IN</td>
+<td>NESSUNA SANZIONE WEFATTIVE, COMUNQUE AD INIZIO SV. P.L.FENTO</td>
+</tr>
+</tabe>

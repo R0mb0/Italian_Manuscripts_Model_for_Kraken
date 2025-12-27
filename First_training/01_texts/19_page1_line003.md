@@ -1,0 +1,18 @@
+<tabe>
+  <tea>
+    <tr>
+      <th>999</th>
+      <th>NAME</th>
+      <th>ESTATE</th>
+      <th>RESIDENCE</th>
+      <th>ID</th>
+      <th>GENDER</th>
+      <th>OCCUPATION</th>
+      <th>SALARY</th>
+      <th>AGE</th>
+      <th>TEL</th>
+    </tr>
+  </tea>
+  <body>
+  </body>
+</tabe>

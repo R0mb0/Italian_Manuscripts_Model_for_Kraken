@@ -1,0 +1,66 @@
+<tabe>
+<tea>
+<tr>
+<th></th>
+<th>Competenze chiave europee</th>
+<th>Competenze dal Profilo dello studente al termine del prime ciclo di Istruzione</th>
+<th>Livello</th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>1</td>
+<td>Comunicazione nella Adelina- guao lingua di istruzione</td>
+<td>Ha una padronanza della lingua tafana che gli consente di Como- prendere enunciati, di raccontare le proprie esperienze e di adotta- re un registro linguistico appropriato alle diverse situazioni.</td>
+<td></td>
+</tr>
+<tr>
+<td>2</td>
+<td>Comunicazione nella lingua straniera</td>
+<td>É in graspo di sostenere in lingua inglese una comunicazione- amenziale in semplici situazioni di vita quotidiana.</td>
+<td></td>
+</tr>
+<tr>
+<td>3</td>
+<td>Competenza matematica e conta- petente di base in scienza e tee- enologia</td>
+<td>Utilizza le sue conoscenze matematiche e scientifico-tecnologiche per trovare e giustificare soluziona a problemi reali.</td>
+<td></td>
+</tr>
+<tr>
+<td>4</td>
+<td>Competenze digitali</td>
+<td>Usa con responsabilità le tecnologie in contesti comunicativi con- erelt per ricercare informazioni e per interagire con altre persone. come supporto alla creatività e alla soluzione di problemi secapli- ci.</td>
+<td></td>
+</tr>
+<tr>
+<td>5</td>
+<td>Imparare and imparare</td>
+<td>Possiede un patrimonio di conoscenze e nozioni di base ed è in grado di restare nuove informazioni. So impegna in miosi ape- rendimenti anche in modo autonomo.</td>
+<td></td>
+</tr>
+<tr>
+<td>6</td>
+<td>L'competenze sociali e civiche</td>
+<td>Ha cura e rispetto di sé, degli altri e dell'ambiente. Rispetta le re- gole condivise e collabora con gli altri. Si impegna per portare a compimento il lavoro iniziato, da solo o insieme agli altri.</td>
+<td></td>
+</tr>
+<tr>
+<td>7</td>
+<td>Spirito di iniziativa</td>
+<td>Dimostra originalità e spirito di iniziativa. È in grado di realizzare semplici progetti. Sa assumine le proprie responsabilità, chiede acute quando si trova in difficoltà e sa fornire aiuto a chi lo chiede.</td>
+<td></td>
+</tr>
+<tr>
+<td>8</td>
+<td>Consapevolezza ed espressione culturale</td>
+<td>Si orienta nello spazio e nel tempo, osservando e descrivendo anatemi, fatti, fenomeni e produzioni artistiche. Riconosce le diverse identità, le tradizioni culturali e reagisse in un'ottica di dialogo e di rispetto reciproco In relazione alle proprie potenzialità e al proprio saleme si esprit- me negli ambita che gli sono più congeniali: motori, artistici e musicali.</td>
+<td></td>
+</tr>
+<tr>
+<td></td>
+<td></td>
+<td>L'alunno va ha coltre mostrato significative competenze nello svolgimento di attività scolastiche efo extrascolastica-</td>
+<td></td>
+</tr>
+</body>
+</tabe>

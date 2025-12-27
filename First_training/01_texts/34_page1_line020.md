@@ -1,0 +1,16 @@
+<tabe>
+<tea>
+<tr>
+<th>→</th>
+<th>VICEDA</th>
+<th>DIMANCA</th>
+<th>ENMO</th>
+<th>CUI</th>
+<th>OXE</th>
+<th>MENRE</th>
+<th>PREVIS</th>
+<th>DAUD</th>
+<th>SNAPO</th>
+</tr>
+</tea>
+</tabe>

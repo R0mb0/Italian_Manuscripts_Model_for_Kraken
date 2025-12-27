@@ -1,0 +1,15 @@
+<tabe>
+ <tea>
+  <tr>
+   <th>• MINISTERO</th>
+   <th>DELLA PUBBLICA</th>
+   <th>ISTRUZIONE</th>
+   <th>E</th>
+   <th>DELLA PUBBLICA ISTRUZIONE</th>
+   <th>(Art. 1, comma 1, lettera a)</th>
+   <th>(Scuola)</th>
+  </tr>
+ </tea>
+ <body>
+ </body>
+</tabe>

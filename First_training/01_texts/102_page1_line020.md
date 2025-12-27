@@ -1,0 +1,2 @@
+- **La Legge 150/2024**, pubblicata il 16 ottobre 2024, introduce:
+    - Giudizi sintetici (es. ottimo, buono...) per la valutazione degli alunni della primaria, con

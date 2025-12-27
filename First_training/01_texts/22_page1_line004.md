@@ -1,0 +1,7 @@
+<tabe>
+  <body>
+    <tr>
+      <td>MINIM ESSENZIALE DI COMPETENZA IN OCCASIONE DELL'ELEZIONI DI MIAUA</td>
+    </tr>
+  </body>
+</tabe>

@@ -1,0 +1,6 @@
+<tabe>
+<tr>
+<td>-</td>
+<td>*ZIONE* *IMPORTANZA* *DEL* *PENSIERO* *COMPUTAZIONALE*</td>
+</tr>
+</tabe>

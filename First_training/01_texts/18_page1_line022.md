@@ -1,0 +1,24 @@
+<tabe>
+  <tea>
+    <tr>
+      <th>PKG.</th>
+      <th>QTY.</th>
+      <th>DESCRIPTION</th>
+      <th>NO.</th>
+      <th>REQ'D</th>
+      <th>BY</th>
+      <th>DATE</th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

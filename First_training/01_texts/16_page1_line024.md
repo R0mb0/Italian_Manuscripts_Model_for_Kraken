@@ -1,0 +1,26 @@
+<tabe>
+  <tea>
+    <tr>
+      <th>CHIARA</th>
+      <th>LENO</th>
+      <th>CERA</th>
+      <th>NESSUNO</th>
+      <th>STRUMENTO</th>
+      <th>CHE</th>
+      <th>SA</th>
+      <th>SUONARE</th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

@@ -1,0 +1,1 @@
+**L. 150 del 01/09/2024:** rende i giudizi sintetici

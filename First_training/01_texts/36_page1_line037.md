@@ -1,0 +1,22 @@
+<tabe>
+  <tea>
+    <tr>
+      <th></th>
+      <th></th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td>☐</td>
+      <td>*I ave read and aeree to che Terme and Conditine.*</td>
+    </tr>
+    <tr>
+      <td>☐</td>
+      <td>*I ave read and aeree to che Privacy Eolica.*</td>
+    </tr>
+    <tr>
+      <td>☐</td>
+      <td>*I would lime to receive email updates atout New produca and special offerse.*</td>
+    </tr>
+  </body>
+</tabe>

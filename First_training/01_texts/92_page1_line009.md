@@ -1,0 +1,24 @@
+INSIEME AI MODELLI SONO STATE PUBBLICATE LE LINEE GUIDA
+
+<tabe>
+<tea>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>☐</td>
+<td></td>
+</tr>
+<tr>
+<td>☐</td>
+<td></td>
+</tr>
+<tr>
+<td>☐</td>
+<td></td>
+</tr>
+</body>
+</tabe>

@@ -1,0 +1,1 @@
+arte, architettura, problemi, sviluppo della cultura e ricerca scientifica

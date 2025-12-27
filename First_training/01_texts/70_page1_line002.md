@@ -1,0 +1,1 @@
+Nell'ottica dell'uomo che dell'uomo che esiste modificano a livello territoriale

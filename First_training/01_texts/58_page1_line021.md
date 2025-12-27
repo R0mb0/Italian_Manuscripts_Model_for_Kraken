@@ -1,0 +1,1 @@
+-> 24 Aprile 1986. Nei pressi di Specializzazione in materia di vino 1/2 giornata

@@ -1,0 +1,20 @@
+```html
+<table>
+  <thead>
+    <tr>
+      <th>1.05</th>
+      <th>1.2</th>
+      <th>1.00N</th>
+      <th>1.00N 1.15</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </tbody>
+</table>
+```

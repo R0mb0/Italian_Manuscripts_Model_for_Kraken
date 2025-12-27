@@ -1,0 +1,26 @@
+<tabe>
+  <body>
+    <tr>
+      <td></td>
+      <td>ANDRIONE LIBRI DI TESTO</td>
+      <td>BS E COMPONENTE</td>
+    </tr>
+    <tr>
+      <td></td>
+      <td></td>
+      <td>COMITATO DI VALUNAZIONE</td>
+    </tr>
+    <tr>
+      <td>4. USCITETAINATICHE</td>
+      <td>8 PROGRAMMA EATTUA INIZIA</td>
+    </tr>
+    <tr>
+      <td>5. ADEQUAMENIO ORARIO</td>
+      <td>TIVE PER ALLAN con</td>
+    </tr>
+    <tr>
+      <td>6. MODIFICA CALENDARIO</td>
+      <td>DISABILITA</td>
+    </tr>
+  </body>
+</tabe>

@@ -1,0 +1,23 @@
+formativi, anche in ottica di
+difesone leasing.
+- Fare riferimento alle
+competenze chiave per
+
+<tabe>
+<tea>
+<tr>
+<th></th>
+<th></th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>Competendo multilinguistien</td>
+<td>Utilizzate la Luana inglese a livello elementare in male e Lilia cotali alee guitta produzione scritta e produzione inletamentalet on scempiasi adiva quotidiana Neive che riguardano Bariano immediate lamban livello Al del Qua Come Tintopeosh Ritenendo per le lingue). Avere consapevolezza che esistono langue e culture diverse</td>
+</tr>
+<tr>
+<td>Competenza matematica e</td>
+<td>Ionizzare le coпомене Chianche screen-tecnologiche per Eva</td>
+</tr>
+</body>
+</tabe>

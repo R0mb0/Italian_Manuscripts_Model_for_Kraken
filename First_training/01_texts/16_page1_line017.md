@@ -1,0 +1,7 @@
+<tabe>
+  <body>
+    <tr>
+      <td>*ADANA (L. DECRETO LEGISLATIVO N. 1559 DEL 17-12-1947, QUESITO</td>
+    </tr>
+  </body>
+</tabe>

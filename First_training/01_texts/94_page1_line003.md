@@ -1,0 +1,32 @@
+• rende operativa la l. 150/ del 01/10/2024
+• offre le linee guida
+• ogni istituzione scolastica ha deciso in autonomia quando rendere operativi i giudizi sintetici
+poiché ogni istituzione scolastica può decidere se suddividere l'anno in quadrimestri,
+pentametri, ecc. In ogni caso i giudizi sintetici devono essere attuati per la valutazione
+collusiva di fine anno scolastico (22 2024-2025)
+• sostituisce la legge 172/2020 (che stabiliva i giudizi decrittavi) e le relative linee guida
+costruisce !! DM 742/2017
+D.M. n. 14 del 30/01/2024: stabilisce nuovi modelli di certificazione delle competenze per gli alunni
+dalla scuola primaria all'istruzione per gli adulti
+
+Finalità del Decreto
+• Migliorare l'orientamento, il
+riorientamento e
+l'integrazione dei percorsi
+
+<tabe>
+<tea>
+<tr>
+<th>COMPETENZA CHIAVE</th>
+<th>COMPETENZE AL TERMINE DELLA SCUOLA PRIMARIA</th>
+<th>LIVELLO'</th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>Competenza alfabetica funzionale</td>
+<td>Padroneggiare la lingua di scolarizzazione in modo da comprendere enunciati, raccontare le proprie esperienze e adottare un registro linguistico appropriato alle diverse situazioni</td>
+<td></td>
+</tr>
+</body>
+</tabe>

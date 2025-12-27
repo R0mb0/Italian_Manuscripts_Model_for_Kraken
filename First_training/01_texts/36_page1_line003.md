@@ -1,0 +1,1 @@
+2c. (C-Ar-C or C=C), *N*H, *O*H

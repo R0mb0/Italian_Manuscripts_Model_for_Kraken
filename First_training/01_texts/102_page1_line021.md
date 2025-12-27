@@ -1,0 +1,1 @@
+**descrizioni dettagliate sugli apprendimenti in ogni disciplina**

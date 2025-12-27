@@ -1,0 +1,28 @@
+<tabe>
+  <tea>
+    <tr>
+      <th>(A)TRATOS</th>
+      <th>UN</th>
+      <th>CARAJO</th>
+      <th>CON</th>
+      <th>Gi</th>
+      <th>ACMI</th>
+      <th>(INSECTO)</th>
+      <th>AS</th>
+      <th>ESTERO</th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

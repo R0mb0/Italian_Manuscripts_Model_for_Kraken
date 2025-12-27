@@ -1,0 +1,30 @@
+<tabe>
+  <tea>
+    <tr>
+      <th></th>
+      <th>GL</th>
+      <th>INTRAVENTO</th>
+      <th>DEVONO</th>
+      <th>ESSERE</th>
+      <th>NTI</th>
+      <th>LIMITI</th>
+      <th>DELE</th>
+      <th>RISORSE</th>
+      <th>UMANE</th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+      <td></td>
+    </tr>
+  </body>
+</tabe>

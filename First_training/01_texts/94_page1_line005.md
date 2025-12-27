@@ -1,0 +1,54 @@
+Raccomandazione UE
+22/05/2018
+
+Quando viene rilasciata la
+certificazione:
+1. Fine scuola primaria (classe
+quinta)
+2. Fine primo ciclo di istruzione
+(esame di terza media)
+3. Ecc.
+
+<tabe>
+<tea>
+<tr>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</tea>
+<body>
+<tr>
+<td>digitale</td>
+<td>per ricercare informazioni e per interagire con altre persone, come supporto alla creatività e alla soluzione di problemi semplici.</td>
+<td></td>
+</tr>
+<tr>
+<td>Competenza personale, sociale e capacità di imparare a imparare</td>
+<td>Avere cura e rispetto di sé, degli altri e dell'ambiente, affrontare positivamente i conflitti, collaborare con altri, enfatizzare.
+
+Esprimere le proprie personali opinioni e sensibilità nel rispetto di sé e degli altri.
+
+Utilizzare conoscenze e nozioni di base per ricercare nuove informazioni. Accedere a nuovi apprendimenti anche in modo autonomo.
+
+Portare a compimento il lavoro iniziato, da solo o insieme agli altri.</td>
+<td></td>
+</tr>
+<tr>
+<td>Competenza in materia di cittadinanza</td>
+<td>Rispettare le regole condivise e collaborare con gli altri per la costruzione del bene comune.
+
+Partecipare alle diverse forme di vita comunitaria, divenendo consapevole dei valori costituzionali.
+
+Riconoscere le diverse identità, le tradizioni culturali e religiose, in un'ottica da dialogo e di rispetto reciproco.</td>
+<td></td>
+</tr>
+<tr>
+<td>Competenza imprenditoriale</td>
+<td>Dimostrare originalità e spirito di iniziativa. Realizzare semplici progetti. Assumersi le proprie responsabilità, chiedere aiuto e fornirlo quando necessario.
+
+Riflettere sulle proprie scelte.</td>
+<td></td>
+</tr>
+</body>
+</tabe>

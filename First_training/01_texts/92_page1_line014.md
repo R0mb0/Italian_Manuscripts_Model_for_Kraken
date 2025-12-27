@@ -1,0 +1,16 @@
+- *QUALE È LA DIFFERENZA TRA DOCUMENTO DI VALUTAZIONE*
+
+<tabe>
+  <tea>
+    <tr>
+      <th></th>
+      <th>del Bene</th>
+    </tr>
+  </tea>
+  <body>
+    <tr>
+      <td></td>
+      <td>dei valori</td>
+    </tr>
+  </body>
+</tabe>

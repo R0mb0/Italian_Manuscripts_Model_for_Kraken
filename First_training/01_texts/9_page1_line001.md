@@ -1,0 +1,6 @@
+<tabe>
+<tr>
+<td>Cosi che manifesta la</td>
+<td>tra essere il modo esatto</td>
+</tr>
+</tabe>
