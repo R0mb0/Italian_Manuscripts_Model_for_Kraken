@@ -21,6 +21,19 @@
 \usepackage{minted} % Pacchetto per evidenziare la sintassi
 \usepackage{tcolorbox} % Per riquadri personalizzabili
 
+% Configurazione globale per minted: riquadro, numeri di riga, font più piccolo e spezzatura aggressiva
+\setminted{
+	frame=single,
+	linenos,
+	fontsize=\footnotesize, % o \scriptsize se vuoi ancora più margine
+	breaklines,
+	breakanywhere,
+	numbersep=4pt,      % distanza tra numeri di riga e codice
+	xleftmargin=6pt,    % margine sinistro interno al frame
+	framesep=2pt        % distanza testo-bordo
+}
+
+\usepackage{csquotes} % consigliato con biblatex
 \usepackage{biblatex} %Imports biblatex package
 \addbibresource{riferimenti.bib} %Import the bibliography file
 
@@ -34,585 +47,574 @@
 \date{}
 
 \begin{document}
-\fancypagestyle{firstpage}
-{
-    \fancyhead[L]{\footnotesize{\bf{Universit\`a degli Studi di Urbino Carlo Bo}}}
-	\fancyhead[R]{\footnotesize{\bf{CdL Magistrale Informatica e Innovazione Digitale}}}
-}
-\thispagestyle{firstpage}
-
-\pagestyle{fancy}
-
-\fancyhead{} % clear all header fields
-\fancyhead[L]{\color{Black}{\footnotesize{\thetitle}}}
-\fancyfoot{} % clear all footer fields
-\fancyfoot[R]{\footnotesize{\bf{\thepage}}}
-\fancyfoot[L]{\footnotesize{\bf{Progetto corso Machine Learning}}}
-
-
-
-\twocolumn
-%------------------------------------------                                       
-%                      Title
-%------------------------------------------
-[{
-\maketitle
-\thispagestyle{firstpage}
-\title{\color{Black}\bf{Titolo progetto}}
-%------------------------------------------                                                           
-%                   Abstract
-%------------------------------------------
-\normalsize
-\begin{tcolorbox}[  colback = WhiteSmoke,
-                    ,
-                    width=\linewidth,
-                    arc=1mm, auto outer arc,
-                ]
-\section*{Riassunto}
-%In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
-
-Il lavoro svolto per l'esame è stato il "fine tuning" di un modello pre-esistente di Kraken per ottenerne uno che fosse in grado di leggere i manoscritti italiani, poiché nel luogo dove lavoro io (ovvero la pubblica amministrazione) vi è una forte necessità di strumenti "OCR" avanzati per la digitalizzazione dei documento storici che tra non molto secondo le nuove normative sulla privacy, dovranno essere distrutti. Per raggiungere tale scopo sono stati trascritti (pagina per pagina) e scansionati dei quaderni universitari. Le pagine scansionate sono state poi raffinate con degli script standard in Python che si usano per l'addestramento di Kraken. IL risultato di questa operazione è stato l'ottenimento di un modello che soddisfa i requisiti minimi di operatività richiesti dal mio capo. 
-\end{tcolorbox}
-\vspace{1.5ex}
-}]
-
-
-%------------------------------------------
-%                   Main Matter
-%------------------------------------------
-
-\section{Introduzione}
-%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
-
-\subsection{Il problema}
-Il problema prevede l'addempimento alle regole del "GDPR" in particolare gli articoli: Art. 15, Art. 169, c.1 e Art. 160/162, c. 1/162, 2 e 3/164, c. 4. (per quanto riguarda la catagolazione dei documenti sensibili e della loro archiviazione invitando a distruggerne la versione cartacea qualora presente) e anche la ISO/IEC 21964 che definisce la transizione dal cartaceo al digitale.\newline
-L'ente per il quale lavoro io (ovvero l'I.N.R.C.A.) che è un istituto sia ospedaliero che di ricerca nazionale ha l'obbligo di adempiere questi obblighi di legge, pertanto si è resa necessaria la ricerca di strumenti "OCR" idonei alla digitalizzazione dei documenti cartacei.\newline
-I primi software analizzati e successivamente scartati poiché inadatti sono stati: 
-
-\begin{itemize}
-	\item Wondershare PDFelement
-	\item ABBYY FineReader PDF 16
-	\item Nanonets 
-	\item Adobe Acrobat
-\end{itemize}
-
-La motivazione per quale questo software sono stati giudicati come inadatti è che nessuno di questi ha un vero supporto per documenti che possiedono delle parti manoscritte, che nel caso di un istituti di ricerca possono essere le ricette fatte e le note sui pazienti.\newline
-In linea teorica gli "OCR" su base "AI" sono gli unici ad essere idonei per il carico di lavoro descritto, ma un istituto di ricerca ancor prima della sperimentazione non può procedere con questo strumenti, poiché tutti richiedono la trasmissione remota delle pagine da analizzare e a questo punto non è garantita la sicurezza delle informazioni. \newline
-
-Quindi quello che serve è una AI che si abbastanza efficiente per riuscire ad essere eseguita con soddisfazione in uno dei pc di comparto, L'unica strada plausibile era quella di creare un modello per Kraken, siccome tutte le altre AI opensource sono troppo poco mature per essere utilizzate e quello che invece funziona è tutto a pagamento. 
-
-\subsection{Input e Output}
-
-I file in ingresso sono le scannerizzazioni dei documenti da digitalizzare, previa la pulizia fatta con ScanTailor, mentre si identificano file di output, i documenti txt contenenti le trascrizioni.\newline
-Al fine del lavoro specifico che mi è stato assegnato dal mio capo, il lavoro si può concludere con questo livello di documentazione, siccome il piano non è quello di ottenere un manoscritto o un documento misto quel quale il testo è selezionabile. Ma è quello di creare un pacchetto (in questo caso una cartella) dove si racchiude la scansione del testo e la trascrizione, questa cosa ai fini di archiviazione della documentazione, funge come sistema per l'indentificazione del documento, in quanto, la "query" di ricerca può essere eseguita leggendo il contenuto di tutte le trascrizioni, e quando invece si desidera visualizzare il documento finale, viene riproposta la scannerizzazione. 
-
-\subsection{Il modello}
-
-%Qui \`e anche il caso di inserire una parte dedicata al background e ai lavori correlati al progetto tramite citazioni ad opportuni riferimenti bibliografici di libri, articoli scientifici e/o (eventualmente, in seconda battuta, anche siti web autorevoli) \cite{dirac}, \cite{einstein}, \cite{uniurbwebsite}.
-%L'utilizzo di un motore di ricerca accademica come Google Scholar (https://scholar.google.com) \`e particolarmente utile per questo scopo (vi permette anche di estrarre le citazioni in formato BibTeX).
-%Raggruppare lo stato dell'arte secondo macro-categorie permette di evidenziare quali soluzioni (algoritmi di apprendimento, modelli, librerie software) sono state proposte per un dato problema.   
-
-%Le citazioni riguardano i riferimenti bibliografici della sezione apposita e includono: {\it i)} articoli scientifici e/o libri utilizzati come riferimento; {\it ii)} articoli scientifici e/o libri che descrivono eventuali algoritmi e modelli utilizzati che non sono stati affrontati durante il corso; {\it iii)} codice o librerie software utilizzate (e.g. {\tt scikit-learn}, {\tt Tensorflow}).
-
-Durante il processo di addestramento ho utilizzato questo modello base di cui ho fatto il fine-tuning: Tridis\_Medieval\_EarlyModern.mlmodel che secondo la documentazione di kraken è il modello che più avvicina al risultato che desidero ottenere. In pratica il modello di partenza è quello per leggere i manoscritti latini. Questo è risultato il modello più idoneo siccome a livello geometrico la scrittura tra i manoscritti italiano e i manoscritti latini più recenti, sono simili, per tanto si prospettava la buona uscita del lavoro.
-
-\section{Metodi}
-
-Il processo di addestramento ha seguito questa metodologia di lavoro, partendo dal presupposto che, kraken inizialmente come progetto opensource è stato poi acquisito dall'unione europea come una specie di AI interna, la motivazione è la stessa che ha spinto a me personalmente ad utilizzarla, ovvero la necessità di avere un "OCR" che giri in locale su una macchina di cui gli operatori possono avere il controllo per il processo di digitalizzazione dei documenti storici che fanno parte della storia del pubblico. Ma poi (detto brevemente) il processo è stato oscurato in quanto la stessa AI gestita dall'unione europea non soddisfa i requisiti della legge "2024/1689, nota come AI Act" emanata da loro stessi, la conseguenza è che il progetto è stato oscurato. Quello che rimane accessibile sono delle repository su GitHub non più mantenute e le repository del progetto del codice opensoruce dell'unione europea dove tutti i link google a kraken puntano generano errore 404.
-
-Utilizzando ChatGPT (fornitami gratuitamente dal progetto scalastico di github) inizio a mettere ordine in questa situazione. 
-
-Prima di tutto, avendo una scheda grafica Nvdia, utilizzo come sistema operativo PopOS siccome è uno dei pochi sistemi operativi che nel caso di schede video Nvdia mette subito a disposizione (out-of-the-box) una impostazione completa dei driver ed inoltre già offre l'accesso ai Cuda-Core, in questo caso io ho usato la versione 12.
-
-Seguendo le indicazioni di GPT, ho scaricato quello che sembra essere l'ultimo modello valido (secondo la comunnity), per fare ciò ho utilizzato conda e utilizzando pip ho scaricato kraken. 
-
-Tutto il lavoro è stato fatto utilizzando python. 
-
-\subsection{La gestione delle immagini}
-
-Inizialmente con l'uso di una stampante da ufficio professionale (600 dpi di definizione dello scanner) sono state scannerizzate circa 150 pagine di appunti di un corso universitario. (il quaderno è stato scelto poiché già si avevano le trascrizioni).\newline
-Utilizzando il software opensource ScanTailor (seguendo le impostazioni standard) sono state corrette tutte le scansioni, in particolare per quanto riguarda la centratura dell'immagine e il ritaglio delle parti inutili. L'intero processo ha mantenuto la qualità generare dell'immagine sempre a 600 DPI.\newline\newline
-
-Il processo è continuato dividendo ogni pagina in delle linee. Utilizzando le trascrizioni precedenti, si è associata ad ogni linea una trascrizione. Quindi l'insieme delle immagini e delle trascrizioni (associate dal nome) ha presentato il bacino di dati per il fine tuning. 
-
-\subsection{il processo di addestramento}
-
-\paragraph{Generazione ground\_truth dai file.md per riga}
-
-Utilizzando questo script in Python, è stato generato il ground\_truth (ovvero l'insieme di dati generati umanamente che quindi si identificano come verità assoluta), è a questo punto che si rende evidente che le trascrizioni erano in formato markdown, siccome in questo modo, le scritte sono più ordinate.\newline\newline
-
-\textbf{Questo è il comando che è stato lanciato}\newline\newline
-
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	python3 make_gt_from_line_md.py 
-	--images_dir "./00_images" \
-	--md_dir "./01_texts" \
-	--out "gt_new/ground_truth_new.txt"
-\end{minted}
-
-\textbf{Questo invece è lo script che viene invocato per le elaborazioni}\newline\newline
-
-\begin{minted}[
-	linenos,          % numeri di riga
-	frame=single,     % riquadro attorno al codice
-	fontsize=\small,  % dimensione carattere
-	breaklines        % manda a capo le righe lunghe
-	]{python}
-	#!/usr/bin/env python3
-	"""
-	make_gt_from_line_md.py
-	
-	Genera gt/ground_truth.txt associando ogni immagine (images_dir) al file markdown corrispondente
-	(md_dir) usando lo stesso stem (es: 100_page1_line001.png -> 100_page1_line001.md).
-	
-	Uso:
-	python3 make_gt_from_line_md.py --images_dir "./00_images" --md_dir "./01_texts" --out "./gt/ground_truth.txt"
-	
-	Opzioni:
-	--images_glob : pattern per le immagini (default '*.*')
-	--join_multiline : se true concatena tutte le righe del .md in una sola linea (default True)
-	--relpath : se true scrive path relative (default True)
-	"""
-	import argparse
-	from pathlib import Path
-	import unicodedata
-	import re
-	import sys
-	
-	def strip_markdown(s):
-	# rimozioni semplici markdown, non un parser completo
-	s = re.sub(r'!\[.*?\]\(.*?\)', '', s)    # immagini
-	s = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', s)  # link [text](url) -> text
-	s = re.sub(r'[`*_]{1,}', '', s)          # backticks, asterischi, underscore
-	s = re.sub(r'^\s*>\s*', '', s, flags=re.M) # blockquote
-	s = re.sub(r'\s+', ' ', s)
-	return s.strip()
-	
-	def normalize(s):
-	return unicodedata.normalize("NFC", s).strip()
-	
-	def main():
-	p = argparse.ArgumentParser()
-	p.add_argument('--images_dir', required=True)
-	p.add_argument('--md_dir', required=True)
-	p.add_argument('--out', default='gt/ground_truth.txt')
-	p.add_argument('--images_glob', default='*.*', help="glob pattern for images, default '*.*'")
-	p.add_argument('--join_multiline', action='store_true', default=True, help='Concatena più linee del .md in una')
-	p.add_argument('--no-join', dest='join_multiline', action='store_false', help='Non concatenare, usa solo la prima riga')
-	p.add_argument('--relpath', action='store_true', default=True, help='Usa path relative per le immagini nel GT')
-	args = p.parse_args()
-	
-	images_dir = Path(args.images_dir)
-	md_dir = Path(args.md_dir)
-	outp = Path(args.out)
-	outp.parent.mkdir(parents=True, exist_ok=True)
-	
-	imgs = sorted([p for p in images_dir.glob(args.images_glob) if p.is_file()])
-	if not imgs:
-	print("Nessuna immagine trovata in", images_dir, file=sys.stderr)
-	sys.exit(1)
-	
-	missing_md = []
-	written = 0
-	with outp.open('w', encoding='utf-8') as fh:
-	for img in imgs:
-	stem = img.stem
-	md_path = md_dir / (stem + '.md')
-	if not md_path.exists():
-	# tenta anche altre estensioni comuni
-	found = None
-	for ext in ['.txt', '.mdown', '.markdown']:
-	cand = md_dir / (stem + ext)
-	if cand.exists():
-	found = cand
-	break
-	if found:
-	md_path = found
-	else:
-	missing_md.append((img.name, str(md_path)))
-	continue
-	text = md_path.read_text(encoding='utf-8')
-	# split in non-empty lines
-	lines = [normalize(strip_markdown(l)) for l in text.splitlines() if l.strip()]
-	if not lines:
-	# vuoto -> segnala e salta
-	missing_md.append((img.name, f"{md_path} (vuoto)"))
-	continue
-	if args.join_multiline:
-	txt = ' '.join(lines)
-	else:
-	txt = lines[0]
-	# pulizia finale
-	txt = normalize(strip_markdown(txt))
-	# path scritto: relativo se richiesto
-	if args.relpath:
-	img_path_str = str(Path(args.images_dir).joinpath(img.name).as_posix())
-	else:
-	img_path_str = str(img.resolve())
-	# assicurati che non ci siano tab/newline nel testo
-	txt = txt.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ')
-	fh.write(f"{img_path_str}\t{txt}\n")
-	written += 1
-	
-	print(f"Wrote {written} lines to {outp}")
-	if missing_md:
-	print(f"Missing or empty md for {len(missing_md)} images (showing up to 20):")
-	for m in missing_md[:20]:
-	print("  -", m[0], "expected", m[1])
-	
-	if __name__ == '__main__':
-	main()
-\end{minted}
-
-\paragraph{ Normalizzazione GT e creazione di splits+charset per le righe}
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	python3 validate_and_normalize_gt.py \
-	--gt "gt_new/ground_truth_new.txt" \
-	--root "." \
-	--out "gt_new/ground_truth_new_normalized.txt"
-\end{minted}
-
-\textbf{Questo è il relativo codice che viene eseguito} \newline\newline
-
-\begin{minted}[
-	linenos,          % numeri di riga
-	frame=single,     % riquadro attorno al codice
-	fontsize=\small,  % dimensione carattere
-	breaklines        % manda a capo le righe lunghe
-	]{python}
-	#!/usr/bin/env python3
-	"""
-	validate_and_normalize_gt.py
-	Verifica e normalizza un ground_truth.txt esistente.
-	
-	Uso:
-	python3 validate_and_normalize_gt.py --gt gt/ground_truth.txt --root . --out gt/ground_truth_normalized.txt --map substitutions.txt
-	
-	Output: file normalizzato e report console con problemi trovati.
-	Map file (opzionale): plain text con righe "from<TAB>to" per sostituzioni (appl. prima della normalizzazione NFC).
-	"""
-	import argparse, sys, unicodedata
-	from pathlib import Path
-	from collections import defaultdict
-	
-	def load_map(path):
-	m = {}
-	if not path:
-	return m
-	for ln in open(path, encoding='utf-8'):
-	ln = ln.rstrip('\n')
-	if not ln or ln.startswith('#'): continue
-	if '\t' in ln:
-	a,b = ln.split('\t',1)
-	else:
-	parts = ln.split(None,1)
-	if len(parts)!=2: continue
-	a,b = parts
-	m[a] = b
-	return m
-	
-	def apply_map(s,mapping):
-	for a,b in mapping.items():
-	s = s.replace(a,b)
-	return s
-	
-	def normalize_text(s):
-	s = s.strip()
-	s = ' '.join(s.split())  # collapse whitespace
-	s = unicodedata.normalize('NFC', s)
-	return s
-	
-	def main():
-	p = argparse.ArgumentParser()
-	p.add_argument('--gt', required=True)
-	p.add_argument('--root', default='.', help='Root dir to resolve image paths')
-	p.add_argument('--out', default=None, help='Output normalized GT file (if omitted, no file is written)')
-	p.add_argument('--map', default=None, help='Optional substitutions file (from<TAB>to)')
-	args = p.parse_args()
-	
-	mapping = load_map(args.map)
-	root = Path(args.root)
-	gt = Path(args.gt)
-	if not gt.exists():
-	print('gt file not found', gt, file=sys.stderr); sys.exit(1)
-	
-	seen_paths = set()
-	missing = []
-	empty = []
-	bad_lines = []
-	duplicates = defaultdict(int)
-	total = 0
-	normalized_lines = []
-	
-	for i, ln in enumerate(gt.read_text(encoding='utf-8').splitlines(), start=1):
-	if not ln.strip():
-	continue
-	if '\t' not in ln:
-	bad_lines.append((i, ln))
-	continue
-	path, txt = ln.split('\t',1)
-	path = path.strip()
-	txt = txt.strip()
-	txt = apply_map(txt, mapping)
-	txt = normalize_text(txt)
-	if txt == '':
-	empty.append((i,path))
-	p = (root / path) if not Path(path).is_absolute() else Path(path)
-	if not p.exists():
-	missing.append((i, path))
-	duplicates[path] += 1
-	seen_paths.add(path)
-	normalized_lines.append((path, txt))
-	total += 1
-	
-	# report
-	print(f"Total lines read: {total}")
-	if bad_lines:
-	print(f"Lines without tab: {len(bad_lines)} (showing up to 10):")
-	for i,ln in bad_lines[:10]: print(i, ln[:200])
-	if empty:
-	print(f"Empty transcriptions: {len(empty)}")
-	if missing:
-	print(f"Missing image files: {len(missing)} (showing up to 10):")
-	for i,p in missing[:10]: print(i, p)
-	dup_list = [p for p,c in duplicates.items() if c>1]
-	if dup_list:
-	print(f"Duplicate image entries: {len(dup_list)} (showing up to 10):")
-	for p in dup_list[:10]: print(p, duplicates[p])
-	
-	# write normalized file if requested
-	if args.out:
-	outp = Path(args.out)
-	outp.parent.mkdir(parents=True, exist_ok=True)
-	with outp.open('w', encoding='utf-8') as fh:
-	for path,txt in normalized_lines:
-	# ensure no embedded tabs/newlines in txt
-	txt_clean = txt.replace('\t',' ').replace('\r',' ').replace('\n',' ')
-	fh.write(f"{path}\t{txt_clean}\n")
-	print(f"Wrote normalized ground truth to {outp}")
-	
-	if __name__ == '__main__':
-	main()
-\end{minted}
-
-Il passo successivo è la compattazione delle informazioni per creare il set per il training.\newline\newline
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	python3 split_and_charset.py \
-	gt_new/ground_truth_new_normalized.txt \
-	--out splits_new \
-	--val 0.05 \
-	--test 0.05 \
-	--group-by-page \
-	--page-sep "_"
-\end{minted}
-
-\textbf{Questo è il relativo codice eseguito}\newline\newline
-
-\begin{minted}[
-	linenos,          % numeri di riga
-	frame=single,     % riquadro attorno al codice
-	fontsize=\small,  % dimensione carattere
-	breaklines        % manda a capo le righe lunghe
-	]{python}
-	#!/usr/bin/env python3
-	"""
-	split_and_charset.py
-	
-	Legge un ground truth (path<TAB>trascrizione per riga), normalizza le trascrizioni (NFC),
-	estrae il charset e crea i file splits (train/val/test) e charset.txt.
-	
-	Esempio:
-	python3 split_and_charset.py gt/ground_truth_normalized.txt --out splits --val 0.05 --test 0.05 --group-by-page --page-sep "_"
-	"""
-	import argparse
-	import unicodedata
-	import random
-	from pathlib import Path
-	from collections import defaultdict
-	
-	def normalize_text(s):
-	return unicodedata.normalize("NFC", s).strip()
-	
-	def read_ground_truth(gt_path):
-	entries = []
-	gt_path = Path(gt_path)
-	if not gt_path.exists():
-	raise FileNotFoundError(f"Ground truth file not found: {gt_path}")
-	with gt_path.open("r", encoding="utf-8") as fh:
-	for lineno, line in enumerate(fh, 1):
-	raw = line.rstrip("\n")
-	if not raw.strip():
-	continue
-	if "\t" in raw:
-	img, txt = raw.split("\t", 1)
-	else:
-	parts = raw.split(None, 1)
-	if len(parts) != 2:
-	print(f"Warning: salto linea {lineno} (formato non riconosciuto): {raw}")
-	continue
-	img, txt = parts
-	txt = normalize_text(txt)
-	if txt == "":
-	# skip empty transcription lines by default
-	print(f"Warning: trascrizione vuota a linea {lineno}, salto.")
-	continue
-	entries.append((img, txt))
-	return entries
-	
-	def group_entries(entries, group_by_page, page_sep):
-	if not group_by_page:
-	# no grouping: return list of single-entry groups
-	return [[e] for e in entries]
-	groups = defaultdict(list)
-	for img, txt in entries:
-	stem = Path(img).stem
-	if page_sep and page_sep in stem:
-	key = stem.split(page_sep, 1)[0]
-	else:
-	# fallback: group by parent directory name
-	parent = str(Path(img).parent)
-	key = parent
-	groups[key].append((img, txt))
-	return list(groups.values())
-	
-	def split_groups(groups, val_frac, test_frac, seed):
-	random.seed(seed)
-	random.shuffle(groups)
-	total = sum(len(g) for g in groups)
-	n_val = int(total * val_frac + 0.5)
-	n_test = int(total * test_frac + 0.5)
-	n_train = total - n_val - n_test
-	
-	train, val, test = [], [], []
-	counts = {"train":0, "val":0, "test":0}
-	# greedy assign groups to keep groups intact and approximate counts
-	for g in groups:
-	# compute deficits (target - current)
-	deficits = {
-		"train": n_train - counts["train"],
-		"val": n_val - counts["val"],
-		"test": n_test - counts["test"]
+	\fancypagestyle{firstpage}
+	{
+		\fancyhead[L]{\footnotesize{\bf{Universit\`a degli Studi di Urbino Carlo Bo}}}
+		\fancyhead[R]{\footnotesize{\bf{CdL Magistrale Informatica e Innovazione Digitale}}}
 	}
-	# choose split with largest positive deficit, else train
-	pick = max(deficits.items(), key=lambda x: (x[1], x[0]))[0]
-	if pick == "train":
-	train.extend(g); counts["train"] += len(g)
-	elif pick == "val":
-	# if val would exceed target, fallback to train
-	if counts["val"] + len(g) <= n_val:
-	val.extend(g); counts["val"] += len(g)
-	else:
-	train.extend(g); counts["train"] += len(g)
-	else:
-	if counts["test"] + len(g) <= n_test:
-	test.extend(g); counts["test"] += len(g)
-	else:
-	train.extend(g); counts["train"] += len(g)
-	return train, val, test
+	\thispagestyle{firstpage}
 	
-	def write_split(out_dir, name, entries):
-	out = Path(out_dir)
-	out.mkdir(parents=True, exist_ok=True)
-	path = out / f"{name}.txt"
-	with path.open("w", encoding="utf-8") as fh:
-	for img, txt in entries:
-	fh.write(f"{img}\t{txt}\n")
-	print(f"Wrote {len(entries)} lines to {path}")
+	\pagestyle{fancy}
 	
-	def extract_charset(entries, out_dir):
-	chars = set()
-	for _, txt in entries:
-	chars.update(txt)
-	chars.discard("\n"); chars.discard("\r")
-	chars = sorted(chars)
-	out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
-	charset_path = out / "charset.txt"
-	with charset_path.open("w", encoding="utf-8") as fh:
-	for c in chars:
-	fh.write(c + "\n")
-	with (out / "charset_one_line.txt").open("w", encoding="utf-8") as fh:
-	fh.write("".join(chars))
-	print(f"Extracted {len(chars)} unique characters -> {charset_path}")
+	\fancyhead{} % clear all header fields
+	\fancyhead[L]{\color{Black}{\footnotesize{\thetitle}}}
+	\fancyfoot{} % clear all footer fields
+	\fancyfoot[R]{\footnotesize{\bf{\thepage}}}
+	\fancyfoot[L]{\footnotesize{\bf{Progetto corso Machine Learning}}}
 	
-	def main():
-	p = argparse.ArgumentParser(description="Genera splits e charset da ground_truth")
-	p.add_argument("gt", help="Percorso al file ground_truth (path<TAB>trascrizione per riga)")
-	p.add_argument("--out", "-o", default="splits", help="Cartella di output")
-	p.add_argument("--val", type=float, default=0.05, help="Frazione per validation (default 0.05)")
-	p.add_argument("--test", type=float, default=0.05, help="Frazione per test (default 0.05)")
-	p.add_argument("--seed", type=int, default=42, help="Seed per random shuffle")
-	p.add_argument("--group-by-page", action="store_true", help="Evitare contaminazione raggruppando righe della stessa pagina")
-	p.add_argument("--page-sep", default="_", help="Separatore per estrarre ID pagina dal file stem (es: '0001_01.png' -> pag=0001). Usato solo con --group-by-page")
-	args = p.parse_args()
 	
-	entries = read_ground_truth(args.gt)
-	if not entries:
-	print("Nessuna entry trovata nel ground truth. Esco.")
-	return
-	print(f"Letti {len(entries)} righe dal ground truth.")
-	groups = group_entries(entries, args.group_by_page, args.page_sep)
-	print(f"Raggruppati in {len(groups)} gruppi (group_by_page={args.group_by_page}).")
-	train, val, test = split_groups(groups, args.val, args.test, args.seed)
-	write_split(args.out, "train", train)
-	write_split(args.out, "val", val)
-	write_split(args.out, "test", test)
-	write_split(args.out, "ground_truth_all", train + val + test)
-	extract_charset(entries, args.out)
-	print("Fatto.")
 	
-	if __name__ == "__main__":
-	main()
-\end{minted}
-
-Come ultima ho verificato che il file prodotto fosse valido utilizzando questo comando\newline\newline
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	wc -l splits_new/*.txt
-	sed -n '1,5p' splits_new/train.txt
-\end{minted}
-
-\paragraph{Filtraggio delle immagini per facilitare la lettura di Ketos}
-
-Con questo comando, ho controllato che effettivamente tutte le immagini sono nel formato giusto per essere usate per l'addestramento
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	mkdir -p processed/lines
+	\twocolumn
+	%------------------------------------------                                       
+	%                      Title
+	%------------------------------------------
+	[{
+		\maketitle
+		\thispagestyle{firstpage}
+		\title{\color{Black}\bf{Modello italiano per Kraken}}
+		%------------------------------------------                                                           
+		%                   Abstract
+		%------------------------------------------
+		\normalsize
+		\begin{tcolorbox}[  colback = WhiteSmoke,
+			,
+			width=\linewidth,
+			arc=1mm, auto outer arc,
+			]
+			\section*{Riassunto}
+			%In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
+			
+			Il lavoro svolto per l'esame è stato il "fine tuning" di un modello pre-esistente di Kraken per ottenerne uno che fosse in grado di leggere i manoscritti italiani, poiché nel luogo dove lavoro io (ovvero la pubblica amministrazione) vi è una forte necessità di strumenti "OCR" avanzati per la digitalizzazione dei documento storici che tra non molto secondo le nuove normative sulla privacy, dovranno essere distrutti. Per raggiungere tale scopo sono stati trascritti (pagina per pagina) e scansionati dei quaderni universitari. Le pagine scansionate sono state poi raffinate con degli script standard in Python che si usano per l'addestramento di Kraken. IL risultato di questa operazione è stato l'ottenimento di un modello che soddisfa i requisiti minimi di operatività richiesti dal mio capo. 
+		\end{tcolorbox}
+		\vspace{1.5ex}
+	}]
 	
-	for f in 00_images/*.png; do
-	base=$(basename "$f")
-	convert "$f" \
-	-deskew 40% \
-	-colorspace Gray \
-	-resize x64 \
-	-background white -gravity center -extent 0x64 \
-	"processed/lines/$base"
-	done
-\end{minted}
-
-Quindi adesso che ho a disposizione tutte le immagini nel formato giusto, posso aggiornare i punti di lettura delle immagini\newline\newline
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	sed 's|^00_images/|processed/lines/|' splits_new/train.txt > splits_new/train_proc.txt
-	sed 's|^00_images/|processed/lines/|' splits_new/val.txt   > splits_new/val_proc.txt
-	sed 's|^00_images/|processed/lines/|' splits_new/test.txt  > splits_new/test_proc.txt
-\end{minted}
-
-\paragraph{mappatura delle immagini}
-
-A questo punto in via preliminare all'addestramento, mappo la liste delle immagini e del testo da utilizzare per il training: 
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	awk -F'\t' '{print $1}' splits_new/train_proc.txt > splits_new/train_images.txt
-	awk -F'\t' '{print $1}' splits_new/val_proc.txt   > splits_new/val_images.txt
-	awk -F'\t' '{print $1}' splits_new/test_proc.txt  > splits_new/test_images.txt
-\end{minted}
-
-\textbf{Creazione degli sidecar compatibili con ketos, poichè a questo punto si evidenzia che le ultime implementazioni di kraken omettono i comandi e l'interfaccia per il training} \newline\newline
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
+	
+	%------------------------------------------
+	%                   Main Matter
+	%------------------------------------------
+	
+	\section{Introduzione}
+	%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
+	
+	\subsection{Il problema}
+	Il problema prevede l'addempimento alle regole del "GDPR" in particolare gli articoli: Art. 15, Art. 169, c.1 e Art. 160/162, c. 1/162, 2 e 3/164, c. 4. (per quanto riguarda la catagolazione dei documenti sensibili e della loro archiviazione invitando a distruggerne la versione cartacea qualora presente) e anche la ISO/IEC 21964 che definisce la transizione dal cartaceo al digitale.\newline
+	L'ente per il quale lavoro io (ovvero l'I.N.R.C.A.) che è un istituto sia ospedaliero che di ricerca nazionale ha l'obbligo di adempiere questi obblighi di legge, pertanto si è resa necessaria la ricerca di strumenti "OCR" idonei alla digitalizzazione dei documenti cartacei.\newline
+	I primi software analizzati e successivamente scartati poiché inadatti sono stati: 
+	
+	\begin{itemize}
+		\item Wondershare PDFelement
+		\item ABBYY FineReader PDF 16
+		\item Nanonets 
+		\item Adobe Acrobat
+	\end{itemize}
+	
+	La motivazione per quale questo software sono stati giudicati come inadatti è che nessuno di questi ha un vero supporto per documenti che possiedono delle parti manoscritte, che nel caso di un istituti di ricerca possono essere le ricette fatte e le note sui pazienti.\newline
+	In linea teorica gli "OCR" su base "AI" sono gli unici ad essere idonei per il carico di lavoro descritto, ma un istituto di ricerca ancor prima della sperimentazione non può procedere con questo strumenti, poiché tutti richiedono la trasmissione remota delle pagine da analizzare e a questo punto non è garantita la sicurezza delle informazioni. \newline
+	
+	Quindi quello che serve è una AI che si abbastanza efficiente per riuscire ad essere eseguita con soddisfazione in uno dei pc di comparto, L'unica strada plausibile era quella di creare un modello per Kraken, siccome tutte le altre AI opensource sono troppo poco mature per essere utilizzate e quello che invece funziona è tutto a pagamento. 
+	
+	\subsection{Input e Output}
+	
+	I file in ingresso sono le scannerizzazioni dei documenti da digitalizzare, previa la pulizia fatta con ScanTailor, mentre si identificano file di output, i documenti txt contenenti le trascrizioni.\newline
+	Al fine del lavoro specifico che mi è stato assegnato dal mio capo, il lavoro si può concludere con questo livello di documentazione, siccome il piano non è quello di ottenere un manoscritto o un documento misto quel quale il testo è selezionabile. Ma è quello di creare un pacchetto (in questo caso una cartella) dove si racchiude la scansione del testo e la trascrizione, questa cosa ai fini di archiviazione della documentazione, funge come sistema per l'indentificazione del documento, in quanto, la "query" di ricerca può essere eseguita leggendo il contenuto di tutte le trascrizioni, e quando invece si desidera visualizzare il documento finale, viene riproposta la scannerizzazione. 
+	
+	\subsection{Il modello}
+	
+	%Qui \`e anche il caso di inserire una parte dedicata al background e ai lavori correlati al progetto tramite citazioni ad opportuni riferimenti bibliografici di libri, articoli scientifici e/o (eventualmente, in seconda battuta, anche siti web autorevoli) \cite{dirac}, \cite{einstein}, \cite{uniurbwebsite}.
+	%L'utilizzo di un motore di ricerca accademica come Google Scholar (https://scholar.google.com) \`e particolarmente utile per questo scopo (vi permette anche di estrarre le citazioni in formato BibTeX).
+	%Raggruppare lo stato dell'arte secondo macro-categorie permette di evidenziare quali soluzioni (algoritmi di apprendimento, modelli, librerie software) sono state proposte per un dato problema.   
+	
+	%Le citazioni riguardano i riferimenti bibliografici della sezione apposita e includono: {\it i)} articoli scientifici e/o libri utilizzati come riferimento; {\it ii)} articoli scientifici e/o libri che descrivono eventuali algoritmi e modelli utilizzati che non sono stati affrontati durante il corso; {\it iii)} codice o librerie software utilizzate (e.g. {\tt scikit-learn}, {\tt Tensorflow}).
+	
+	Durante il processo di addestramento ho utilizzato questo modello base di cui ho fatto il fine-tuning: Tridis\_Medieval\_EarlyModern.mlmodel che secondo la documentazione di kraken è il modello che più avvicina al risultato che desidero ottenere. In pratica il modello di partenza è quello per leggere i manoscritti latini. Questo è risultato il modello più idoneo siccome a livello geometrico la scrittura tra i manoscritti italiano e i manoscritti latini più recenti, sono simili, per tanto si prospettava la buona uscita del lavoro.
+	
+	\section{Metodi}
+	
+	Il processo di addestramento ha seguito questa metodologia di lavoro, partendo dal presupposto che, kraken inizialmente come progetto opensource è stato poi acquisito dall'unione europea come una specie di AI interna, la motivazione è la stessa che ha spinto a me personalmente ad utilizzarla, ovvero la necessità di avere un "OCR" che giri in locale su una macchina di cui gli operatori possono avere il controllo per il processo di digitalizzazione dei documenti storici che fanno parte della storia del pubblico. Ma poi (detto brevemente) il processo è stato oscurato in quanto la stessa AI gestita dall'unione europea non soddisfa i requisiti della legge "2024/1689, nota come AI Act" emanata da loro stessi, la conseguenza è che il progetto è stato oscurato. Quello che rimane accessibile sono delle repository su GitHub non più mantenute e le repository del progetto del codice opensoruce dell'unione europea dove tutti i link google a kraken puntano generano errore 404.
+	
+	Utilizzando ChatGPT (fornitami gratuitamente dal progetto scalastico di github) inizio a mettere ordine in questa situazione. 
+	
+	Prima di tutto, avendo una scheda grafica Nvdia, utilizzo come sistema operativo PopOS siccome è uno dei pochi sistemi operativi che nel caso di schede video Nvdia mette subito a disposizione (out-of-the-box) una impostazione completa dei driver ed inoltre già offre l'accesso ai Cuda-Core, in questo caso io ho usato la versione 12.
+	
+	Seguendo le indicazioni di GPT, ho scaricato quello che sembra essere l'ultimo modello valido (secondo la comunnity), per fare ciò ho utilizzato conda e utilizzando pip ho scaricato kraken. 
+	
+	Tutto il lavoro è stato fatto utilizzando python. 
+	
+	\subsection{La gestione delle immagini}
+	
+	Inizialmente con l'uso di una stampante da ufficio professionale (600 dpi di definizione dello scanner) sono state scannerizzate circa 150 pagine di appunti di un corso universitario. (il quaderno è stato scelto poiché già si avevano le trascrizioni).\newline
+	Utilizzando il software opensource ScanTailor (seguendo le impostazioni standard) sono state corrette tutte le scansioni, in particolare per quanto riguarda la centratura dell'immagine e il ritaglio delle parti inutili. L'intero processo ha mantenuto la qualità generare dell'immagine sempre a 600 DPI.\newline\newline
+	
+	Il processo è continuato dividendo ogni pagina in delle linee. Utilizzando le trascrizioni precedenti, si è associata ad ogni linea una trascrizione. Quindi l'insieme delle immagini e delle trascrizioni (associate dal nome) ha presentato il bacino di dati per il fine tuning. 
+	
+	\subsection{il processo di addestramento}
+	
+	\paragraph{Generazione ground\_truth dai file.md per riga}
+	
+	Utilizzando questo script in Python, è stato generato il ground\_truth (ovvero l'insieme di dati generati umanamente che quindi si identificano come verità assoluta), è a questo punto che si rende evidente che le trascrizioni erano in formato markdown, siccome in questo modo, le scritte sono più ordinate.\newline\newline
+	
+	\textbf{Questo è il comando che è stato lanciato}\newline\newline
+	
+	\begin{minted}{bash}
+		python3 make_gt_from_line_md.py \
+		--images_dir "./00_images" \
+		--md_dir "./01_texts" \
+		--out "gt_new/ground_truth_new.txt"
+	\end{minted}
+	
+	\textbf{Questo invece è lo script che viene invocato per le elaborazioni}\newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		make_gt_from_line_md.py
+		
+		Genera gt/ground_truth.txt associando ogni immagine (images_dir) al file markdown corrispondente
+		(md_dir) usando lo stesso stem (es: 100_page1_line001.png -> 100_page1_line001.md).
+		
+		Uso:
+		python3 make_gt_from_line_md.py --images_dir "./00_images" --md_dir "./01_texts" --out "./gt/ground_truth.txt"
+		
+		Opzioni:
+		--images_glob : pattern per le immagini (default '*.*')
+		--join_multiline : se true concatena tutte le righe del .md in una sola linea (default True)
+		--relpath : se true scrive path relative per le immagini nel GT
+		"""
+		import argparse
+		from pathlib import Path
+		import unicodedata
+		import re
+		import sys
+		
+		def strip_markdown(s):
+		# rimozioni semplici markdown, non un parser completo
+		s = re.sub(r'!\[.*?\]\(.*?\)', '', s)    # immagini
+		s = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', s)  # link [text](url) -> text
+		s = re.sub(r'[`*_]{1,}', '', s)          # backticks, asterischi, underscore
+		s = re.sub(r'^\s*>\s*', '', s, flags=re.M) # blockquote
+		s = re.sub(r'\s+', ' ', s)
+		return s.strip()
+		
+		def normalize(s):
+		return unicodedata.normalize("NFC", s).strip()
+		
+		def main():
+		p = argparse.ArgumentParser()
+		p.add_argument('--images_dir', required=True)
+		p.add_argument('--md_dir', required=True)
+		p.add_argument('--out', default='gt/ground_truth.txt')
+		p.add_argument('--images_glob', default='*.*', help="glob pattern for images, default '*.*'")
+		p.add_argument('--join_multiline', action='store_true', default=True, help='Concatena più linee del .md in una')
+		p.add_argument('--no-join', dest='join_multiline', action='store_false', help='Non concatenare, usa solo la prima riga')
+		p.add_argument('--relpath', action='store_true', default=True, help='Usa path relative per le immagini nel GT')
+		args = p.parse_args()
+		
+		images_dir = Path(args.images_dir)
+		md_dir = Path(args.md_dir)
+		outp = Path(args.out)
+		outp.parent.mkdir(parents=True, exist_ok=True)
+		
+		imgs = sorted([p for p in images_dir.glob(args.images_glob) if p.is_file()])
+		if not imgs:
+		print("Nessuna immagine trovata in", images_dir, file=sys.stderr)
+		sys.exit(1)
+		
+		missing_md = []
+		written = 0
+		with outp.open('w', encoding='utf-8') as fh:
+		for img in imgs:
+		stem = img.stem
+		md_path = md_dir / (stem + '.md')
+		if not md_path.exists():
+		# tenta anche altre estensioni comuni
+		found = None
+		for ext in ['.txt', '.mdown', '.markdown']:
+		cand = md_dir / (stem + ext)
+		if cand.exists():
+		found = cand
+		break
+		if found:
+		md_path = found
+		else:
+		missing_md.append((img.name, str(md_path)))
+		continue
+		text = md_path.read_text(encoding='utf-8')
+		# split in non-empty lines
+		lines = [normalize(strip_markdown(l)) for l in text.splitlines() if l.strip()]
+		if not lines:
+		# vuoto -> segnala e salta
+		missing_md.append((img.name, f"{md_path} (vuoto)"))
+		continue
+		if args.join_multiline:
+		txt = ' '.join(lines)
+		else:
+		txt = lines[0]
+		# pulizia finale
+		txt = normalize(strip_markdown(txt))
+		# path scritto: relativo se richiesto
+		if args.relpath:
+		img_path_str = str(Path(args.images_dir).joinpath(img.name).as_posix())
+		else:
+		img_path_str = str(img.resolve())
+		# assicurati che non ci siano tab/newline nel testo
+		txt = txt.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ')
+		fh.write(f"{img_path_str}\t{txt}\n")
+		written += 1
+		
+		print(f"Wrote {written} lines to {outp}")
+		if missing_md:
+		print(f"Missing or empty md for {len(missing_md)} images (showing up to 20):")
+		for m in missing_md[:20]:
+		print("  -", m[0], "expected", m[1])
+		
+		if __name__ == '__main__':
+		main()
+	\end{minted}
+	
+	\paragraph{ Normalizzazione GT e creazione di splits+charset per le righe}
+	
+	\begin{minted}{bash}
+		python3 validate_and_normalize_gt.py \
+		--gt "gt_new/ground_truth_new.txt" \
+		--root "." \
+		--out "gt_new/ground_truth_new_normalized.txt"
+	\end{minted}
+	
+	\textbf{Questo è il relativo codice che viene eseguito} \newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		validate_and_normalize_gt.py
+		Verifica e normalizza un ground_truth.txt esistente.
+		
+		Uso:
+		python3 validate_and_normalize_gt.py --gt gt/ground_truth.txt --root . --out gt/ground_truth_normalized.txt --map substitutions.txt
+		
+		Output: file normalizzato e report console con problemi trovati.
+		Map file (opzionale): plain text con righe "from<TAB>to" per sostituzioni (appl. prima della normalizzazione NFC).
+		"""
+		import argparse, sys, unicodedata
+		from pathlib import Path
+		from collections import defaultdict
+		
+		def load_map(path):
+		m = {}
+		if not path:
+		return m
+		for ln in open(path, encoding='utf-8'):
+		ln = ln.rstrip('\n')
+		if not ln or ln.startswith('#'):
+		continue
+		if '\t' in ln:
+		a,b = ln.split('\t',1)
+		else:
+		parts = ln.split(None,1)
+		if len(parts)!=2:
+		continue
+		a,b = parts
+		m[a] = b
+		return m
+		
+		def apply_map(s,mapping):
+		for a,b in mapping.items():
+		s = s.replace(a,b)
+		return s
+		
+		def normalize_text(s):
+		s = s.strip()
+		s = ' '.join(s.split())  # collapse whitespace
+		s = unicodedata.normalize('NFC', s)
+		return s
+		
+		def main():
+		p = argparse.ArgumentParser()
+		p.add_argument('--gt', required=True)
+		p.add_argument('--root', default='.', help='Root dir to resolve image paths')
+		p.add_argument('--out', default=None, help='Output normalized GT file (if omitted, no file is written)')
+		p.add_argument('--map', default=None, help='Optional substitutions file (from<TAB>to)')
+		args = p.parse_args()
+		
+		mapping = load_map(args.map)
+		root = Path(args.root)
+		gt = Path(args.gt)
+		if not gt.exists():
+		print('gt file not found', gt, file=sys.stderr); sys.exit(1)
+		
+		seen_paths = set()
+		missing = []
+		empty = []
+		bad_lines = []
+		duplicates = defaultdict(int)
+		total = 0
+		normalized_lines = []
+		
+		for i, ln in enumerate(gt.read_text(encoding='utf-8').splitlines(), start=1):
+		if not ln.strip():
+		continue
+		if '\t' not in ln:
+		bad_lines.append((i, ln))
+		continue
+		path, txt = ln.split('\t',1)
+		path = path.strip()
+		txt = txt.strip()
+		txt = apply_map(txt, mapping)
+		txt = normalize_text(txt)
+		if txt == '':
+		empty.append((i,path))
+		pth = (root / path) if not Path(path).is_absolute() else Path(path)
+		if not pth.exists():
+		missing.append((i, path))
+		duplicates[path] += 1
+		seen_paths.add(path)
+		normalized_lines.append((path, txt))
+		total += 1
+		
+		# report
+		print(f"Total lines read: {total}")
+		if bad_lines:
+		print(f"Lines without tab: {len(bad_lines)} (showing up to 10):")
+		for i,ln in bad_lines[:10]:
+		print(i, ln[:200])
+		if empty:
+		print(f"Empty transcriptions: {len(empty)}")
+		if missing:
+		print(f"Missing image files: {len(missing)} (showing up to 10):")
+		for i,p in missing[:10]:
+		print(i, p)
+		dup_list = [p for p,c in duplicates.items() if c>1]
+		if dup_list:
+		print(f"Duplicate image entries: {len(dup_list)} (showing up to 10):")
+		for p in dup_list[:10]:
+		print(p, duplicates[p])
+		
+		# write normalized file if requested
+		if args.out:
+		outp = Path(args.out)
+		outp.parent.mkdir(parents=True, exist_ok=True)
+		with outp.open('w', encoding='utf-8') as fh:
+		for path,txt in normalized_lines:
+		# ensure no embedded tabs/newlines in txt
+		txt_clean = txt.replace('\t',' ').replace('\r',' ').replace('\n',' ')
+		fh.write(f"{path}\t{txt_clean}\n")
+		print(f"Wrote normalized ground truth to {outp}")
+		
+		if __name__ == '__main__':
+		main()
+	\end{minted}
+	
+	Il passo successivo è la compattazione delle informazioni per creare il set per il training.\newline\newline
+	
+	\begin{minted}{bash}
+		python3 split_and_charset.py \
+		gt_new/ground_truth_new_normalized.txt \
+		--out splits_new \
+		--val 0.05 \
+		--test 0.05 \
+		--group-by-page \
+		--page-sep "_"
+	\end{minted}
+	
+	\textbf{Questo è il relativo codice eseguito}\newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		split_and_charset.py
+		
+		Legge un ground truth (path<TAB>trascrizione per riga), normalizza le trascrizioni (NFC),
+		estrae il charset e crea i file splits (train/val/test) e charset.txt.
+		
+		Esempio:
+		python3 split_and_charset.py gt/ground_truth_normalized.txt --out splits --val 0.05 --test 0.05 --group-by-page --page-sep "_"
+		"""
+		import argparse
+		import unicodedata
+		import random
+		from pathlib import Path
+		from collections import defaultdict
+		
+		def normalize_text(s):
+		return unicodedata.normalize("NFC", s).strip()
+		
+		def read_ground_truth(gt_path):
+		entries = []
+		gt_path = Path(gt_path)
+		if not gt_path.exists():
+		raise FileNotFoundError(f"Ground truth file not found: {gt_path}")
+		with gt_path.open("r", encoding="utf-8") as fh:
+		for lineno, line in enumerate(fh, 1):
+		raw = line.rstrip("\n")
+		if not raw.strip():
+		continue
+		if "\t" in raw:
+		img, txt = raw.split("\t", 1)
+		else:
+		parts = raw.split(None, 1)
+		if len(parts) != 2:
+		print(f"Warning: salto linea {lineno} (formato non riconosciuto): {raw}")
+		continue
+		img, txt = parts
+		txt = normalize_text(txt)
+		if txt == "":
+		# skip empty transcription lines by default
+		print(f"Warning: trascrizione vuota a linea {lineno}, salto.")
+		continue
+		entries.append((img, txt))
+		return entries
+		
+		def group_entries(entries, group_by_page, page_sep):
+		if not group_by_page:
+		# no grouping: return list of single-entry groups
+		return [[e] for e in entries]
+		groups = defaultdict(list)
+		for img, txt in entries:
+		stem = Path(img).stem
+		if page_sep and page_sep in stem:
+		key = stem.split(page_sep, 1)[0]
+		else:
+		# fallback: group by parent directory name
+		parent = str(Path(img).parent)
+		key = parent
+		groups[key].append((img, txt))
+		return list(groups.values())
+		
+		def split_groups(groups, val_frac, test_frac, seed):
+		random.seed(seed)
+		random.shuffle(groups)
+		total = sum(len(g) for g in groups)
+		n_val = int(total * val_frac + 0.5)
+		n_test = int(total * test_frac + 0.5)
+		n_train = total - n_val - n_test
+		
+		train, val, test = [], [], []
+		counts = {"train":0, "val":0, "test":0}
+		# greedy assign groups to keep groups intact and approximate counts
+		for g in groups:
+		# compute deficits (target - current)
+		deficits = {
+			"train": n_train - counts["train"],
+			"val": n_val - counts["val"],
+			"test": n_test - counts["test"]
+		}
+		# choose split with largest positive deficit, else train
+		pick = max(deficits.items(), key=lambda x: (x[1], x[0]))[0]
+		if pick == "train":
+		train.extend(g); counts["train"] += len(g)
+		elif pick == "val":
+		# if val would exceed target, fallback to train
+		if counts["val"] + len(g) <= n_val:
+		val.extend(g); counts["val"] += len(g)
+		else:
+		train.extend(g); counts["train"] += len(g)
+		else:
+		if counts["test"] + len(g) <= n_test:
+		test.extend(g); counts["test"] += len(g)
+		else:
+		train.extend(g); counts["train"] += len(g)
+		return train, val, test
+		
+		def write_split(out_dir, name, entries):
+		out = Path(out_dir)
+		out.mkdir(parents=True, exist_ok=True)
+		path = out / f"{name}.txt"
+		with path.open("w", encoding="utf-8") as fh:
+		for img, txt in entries:
+		fh.write(f"{img}\t{txt}\n")
+		print(f"Wrote {len(entries)} lines to {path}")
+		
+		def extract_charset(entries, out_dir):
+		chars = set()
+		for _, txt in entries:
+		chars.update(txt)
+		chars.discard("\n"); chars.discard("\r")
+		chars = sorted(chars)
+		out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
+		charset_path = out / "charset.txt"
+		with charset_path.open("w", encoding="utf-8") as fh:
+		for c in chars:
+		fh.write(c + "\n")
+		with (out / "charset_one_line.txt").open("w", encoding="utf-8") as fh:
+		fh.write("".join(chars))
+		print(f"Extracted {len(chars)} unique characters -> {charset_path}")
+		
+		def main():
+		p = argparse.ArgumentParser(description="Genera splits e charset da ground_truth")
+		p.add_argument("gt", help="Percorso al file ground_truth (path<TAB>trascrizione per riga)")
+		p.add_argument("--out", "-o", default="splits", help="Cartella di output")
+		p.add_argument("--val", type=float, default=0.05, help="Frazione per validation (default 0.05)")
+		p.add_argument("--test", type=float, default=0.05, help="Frazione per test (default 0.05)")
+		p.add_argument("--seed", type=int, default=42, help="Seed per random shuffle")
+		p.add_argument("--group-by-page", action="store_true", help="Evitare contaminazione raggruppando righe della stessa pagina")
+		p.add_argument("--page-sep", default="_", help="Separatore per estrarre ID pagina dal file stem (es: '0001_01.png' -> pag=0001). Usato solo con --group-by-page")
+		args = p.parse_args()
+		
+		entries = read_ground_truth(args.gt)
+		if not entries:
+		print("Nessuna entry trovata nel ground truth. Esco.")
+		return
+		print(f"Letti {len(entries)} righe dal ground truth.")
+		groups = group_entries(entries, args.group_by_page, args.page_sep)
+		print(f"Raggruppati in {len(groups)} gruppi (group_by_page={args.group_by_page}).")
+		train, val, test = split_groups(groups, args.val, args.test, args.seed)
+		write_split(args.out, "train", train)
+		write_split(args.out, "val", val)
+		write_split(args.out, "test", test)
+		write_split(args.out, "ground_truth_all", train + val + test)
+		extract_charset(entries, args.out)
+		print("Fatto.")
+		
+		if __name__ == "__main__":
+		main()
+	\end{minted}
+	
+	Come ultima ho verificato che il file prodotto fosse valido utilizzando questo comando\newline\newline
+	
+	\begin{minted}{bash}
+		wc -l splits_new/*.txt
+		sed -n '1,5p' splits_new/train.txt
+	\end{minted}
+	
+	\paragraph{Filtraggio delle immagini per facilitare la lettura di Ketos}
+	
+	Con questo comando, ho controllato che effettivamente tutte le immagini sono nel formato giusto per essere usate per l'addestramento
+	
+	\begin{minted}{bash}
+		mkdir -p processed/lines
+		
+		for f in 00_images/*.png; do
+		base=$(basename "$f")
+		convert "$f" \
+		-deskew 40% \
+		-colorspace Gray \
+		-resize x64 \
+		-background white -gravity center -extent 0x64 \
+		"processed/lines/$base"
+		done
+	\end{minted}
+	
+	Quindi adesso che ho a disposizione tutte le immagini nel formato giusto, posso aggiornare i punti di lettura delle immagini\newline\newline
+	
+	\begin{minted}{bash}
+		sed 's|^00_images/|processed/lines/|' splits_new/train.txt > splits_new/train_proc.txt
+		sed 's|^00_images/|processed/lines/|' splits_new/val.txt   > splits_new/val_proc.txt
+		sed 's|^00_images/|processed/lines/|' splits_new/test.txt  > splits_new/test_proc.txt
+	\end{minted}
+	
+	\paragraph{mappatura delle immagini}
+	
+	A questo punto in via preliminare all'addestramento, mappo la liste delle immagini e del testo da utilizzare per il training: 
+	
+	\begin{minted}{bash}
+		awk -F'\t' '{print $1}' splits_new/train_proc.txt > splits_new/train_images.txt
+		awk -F'\t' '{print $1}' splits_new/val_proc.txt   > splits_new/val_images.txt
+		awk -F'\t' '{print $1}' splits_new/test_proc.txt  > splits_new/test_images.txt
+	\end{minted}
+	
+	\textbf{Creazione degli sidecar compatibili con ketos, poichè a questo punto si evidenzia che le ultime implementazioni di kraken omettono i comandi e l'interfaccia per il training} \newline\newline
+	
+	\begin{minted}{bash}
 		python3 - <<'PY'
 		from pathlib import Path
 		
@@ -647,91 +649,90 @@ A questo punto in via preliminare all'addestramento, mappo la liste delle immagi
 		total += c
 		print("Total new sidecars created:", total)
 		PY
-\end{minted}
-
-\textbf{verifica che tutto sia apposto}
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	python3 - <<'PY'
-	from pathlib import Path
-	missing = []
-	for lst in ['splits_new/train_images.txt','splits_new/val_images.txt','splits_new/test_images.txt']:
-	p = Path(lst)
-	if not p.exists():
-	continue
-	for l in p.read_text(encoding='utf-8').splitlines():
-	img = Path(l.strip())
-	if not img.exists():
-	continue
-	gt = img.with_suffix('.gt.txt')
-	if not gt.exists():
-	missing.append(str(img))
-	print("Total images without sidecar:", len(missing))
-	if missing[:10]:
-	print("First missing:", missing[:10])
-	PY
-\end{minted}
-
-\paragraph{Training}
-
-Ecco il comando con il quale è stato generato il modello: 
-
-
-\begin{minted}[frame=single, linenos, fontsize=\small]{bash}
-	ketos train \
-	-f path \
-	-i "models/Tridis_Medieval_EarlyModern.mlmodel" \
-	--resize union \
-	-q early \
-	-N 40 \
-	--min-epochs 5 \
-	--lag 10 \
-	-B 4 \
-	-r 5e-5 \
-	-o models/italian_finetuned.mlmodel_best.mlmodel \
-	-t splits_new/train_images.txt \
-	-e splits_new/val_images.txt
-\end{minted}
-
-
-%Qui vanno descritti i metodi utilizzati, ovvero modelli e algoritmi di apprendimento. Per ogni modello/algoritmo descrivete brevemente come funziona, utilizzando anche una notazione matematica coerente (ad esempio inserendo e descrivendo la funzione di costo di tipo cross-entropy di un classificatore regressione logistica, se questo viene usato). Cercate di evidenziare quello che avete assimilato e compreso di un certo metodo.
-
-%Devono essere descritti il/i dataset utilizzato/i, in termini di dimensione e composizione. Quanti esempi sono stati utilizzati per il training? Quanti per l'eventuale validazione? Quanti per il test? 
-%Si devono anche riportare eventuali pre-elaborazioni, come ad esempio la normalizzazione dei dati, oppure l'estrazione di feature particolari. \`E solitamente utile fornire una descrizione del singolo dato, magari tramite l'ausilio di una figura, come ad esempio il segnale riportato in Figura \ref{fig:signals}. 
-
-%\begin{figure}
-%\includegraphics[width=\columnwidth]{signals.pdf}
-%\caption{Esempio di segnale da un accelerometro triassiale.}
-%\label{fig:signals}
-%\end{figure}
-
-\section{Risultati sperimentali}
-
-Le metriche di valutazione regina per questo genere di addestramento è la quantità di parole correttamente riconosciute e scritte, per ogni pagina si definisce una percentuale di accuratezza e la somma di questi dati forma il grafico completo. \newline
-Non si è fatta distinzione della complessità del testo da riconoscere, siccome uno strumento che deve essere affidabile, lo deve essere sempre, in questo termini vi è una analisi senza pietà. Attualmente come si vede poi dai grafici successivi kraken sbaglia una parola ogni tre mediamente, date le prove fotografiche, si deduce che lo sbaglio è legittimo, in quanto ad esempio la parola "casa" può essere letta come "caso" facendo intuire che generalmente le parola vengono abbastanza riconosciute e che ci sia confusione su alcune lettere, questo non sarebbe un grosso problema se si dovesse pensare di filtrare le trascrizioni per contesto, riconoscendo quindi le parole che non c'entrano con il contesto e fare la sostituzione con la parola più probabile. Ma data il continuo proliferare di "Utonti" lo strumento deve semplicemente raggiungere un certo livello di affidabilità, tale da offrire la possibilità di catalogare gli errori come irrilevanti. 
-
-
-%In questa sezione devono essere riportati i risultati degli esperimenti condotti. Come prima cosa vanno definite e spiegate le metriche di valutazione adottate: accuratezza (per i problemi di classificazione), errore quadratico medio o errore assoluto medio (per i problemi di regressione), ecc.
-%Se avete affrontato un problema di classificazione pu\`o essere utile introdurre e riportare le matrici di confusione.
-
-%Altre metriche che non sono state introdotte nel corso (come ad esempio le curve ROC, Receiver Operating Curve) possono ovviamente essere prese in considerazione, purch\`e debitamente studiate e comprese.
-
-%I risultati sono solitamente riassunti in forma di tabelle o grafici (o entrambi) che devono essere opportunamente discussi. Ricordarsi di riportare nei grafici legende e etichette degli assi. 
-%Nel commentare i risultati \`e infine suggerito provare a evidenziare (tramite esempi di dove ha fallito) le limitazioni dell'algoritmo utilizzato o, viceversa, i punti di forza rispetto a potenziali alternative. 
-
-
-\section{Conclusioni}
-In conclusione, come si può vedere dalla sezione precedente, questo lavoro raggiunge il criterio minimo di accettazione per il processo, in quanto l'OCR in questo stato non garantisce una certa affidabilità per la quale lo si può usare ciecamente nella digitalizzazione dei documenti della PC, in quanto ancora qualche scritta non la riconosce propriamente, generalmente, però rimane utile per fare il lavoro più grande.\newline\newline 
-
-Questa situazione però non è del tutto brutta, siccome i risultati ottenuti dimostrano che è ragionevole sviluppare uno strumento specifico per gli obiettivi previsti dalla legge. A livello di comparto questo apre la strada per richiedere i fondi per dedicarsi a questa attività in non concorrenza con altre attività più importanti a livello ospedaliero.\newline\newline
-
-\subsection{Per il futuro}
-
-Con la Speranza di non trovarsi a dover gestire lavori complessi a favore di una qualche legge per la quale il raggiungimento dell'obiettivo è impostato per il tempo prossimo, L'idea è quella di parlare con il DPO aziendale per avere accesso ad un campione sufficientemente grande di documenti, facendo una breve riflessione, se il totale di circa 150 pagine di quaderno hanno portato a questi risultati, presuppongo che ne servano almeno mille di pagine per avere un risultato che possa risultare in una qualche affidabilità. Allo stato attuale il progetto da me presentato è stato ritenuto dal Dirigente Generale qualcosa d'interessa nazionale, di conseguenza, si fa largo anche l'ipotesi che con i fondi ricevuti, si possa variare la pianta organica del comparto per l'acquisizione di una persona a tempo determinato, che abbia il solo scopo di preparare il campione di addestramento. Date le generali difficoltà a mettere ordine tra tutte le informazioni dispersive della documentazione di kraken, si prevede comunque di fare solo un fine tuning (non sembra che sia la mossa migliore pensare di creare un modello da 0)
-
-%\section{Contributi}
-%Nella sezione Contributi vanno inseriti i contributi dei vari componenti del gruppo di lavoro, ovvero chi ha ideato, sviluppato, implementato le specifiche parti del progetto. Ovviamente i contributi possono essere anche paritari, se ogni membro del gruppo ha contribuito in egual misura.
-
-%\printbibliography
-
+	\end{minted}
+	
+	\textbf{verifica che tutto sia apposto}
+	
+	\begin{minted}{bash}
+		python3 - <<'PY'
+		from pathlib import Path
+		missing = []
+		for lst in ['splits_new/train_images.txt','splits_new/val_images.txt','splits_new/test_images.txt']:
+		p = Path(lst)
+		if not p.exists():
+		continue
+		for l in p.read_text(encoding='utf-8').splitlines():
+		img = Path(l.strip())
+		if not img.exists():
+		continue
+		gt = img.with_suffix('.gt.txt')
+		if not gt.exists():
+		missing.append(str(img))
+		print("Total images without sidecar:", len(missing))
+		if missing[:10]:
+		print("First missing:", missing[:10])
+		PY
+	\end{minted}
+	
+	\paragraph{Training}
+	
+	Ecco il comando con il quale è stato generato il modello: 
+	
+	\begin{minted}{bash}
+		ketos train \
+		-f path \
+		-i "models/Tridis_Medieval_EarlyModern.mlmodel" \
+		--resize union \
+		-q early \
+		-N 40 \
+		--min-epochs 5 \
+		--lag 10 \
+		-B 4 \
+		-r 5e-5 \
+		-o models/italian_finetuned.mlmodel_best.mlmodel \
+		-t splits_new/train_images.txt \
+		-e splits_new/val_images.txt
+	\end{minted}
+	
+	
+	%Qui vanno descritti i metodi utilizzati, ovvero modelli e algoritmi di apprendimento. Per ogni modello/algoritmo descrivete brevemente come funziona, utilizzando anche una notazione matematica coerente (ad esempio inserendo e descrivendo la funzione di costo di tipo cross-entropy di un classificatore regressione logistica, se questo viene usato). Cercate di evidenziare quello che avete assimilato e compreso di un certo metodo.
+	
+	%Devono essere descritti il/i dataset utilizzato/i, in termini di dimensione e composizione. Quanti esempi sono stati utilizzati per il training? Quanti per l'eventuale validazione? Quanti per il test? 
+	%Si devono anche riportare eventuali pre-elaborazioni, come ad esempio la normalizzazione dei dati, oppure l'estrazione di feature particolari. \`E solitamente utile fornire una descrizione del singolo dato, magari tramite l'ausilio di una figura, come ad esempio il segnale riportato in Figura \ref{fig:signals}. 
+	
+	%\begin{figure}
+	%\includegraphics[width=\columnwidth]{signals.pdf}
+	%\caption{Esempio di segnale da un accelerometro triassiale.}
+	%\label{fig:signals}
+	%\end{figure}
+	
+	\section{Risultati sperimentali}
+	
+	Le metriche di valutazione regina per questo genere di addestramento è la quantità di parole correttamente riconosciute e scritte, per ogni pagina si definisce una percentuale di accuratezza e la somma di questi dati forma il grafico completo. \newline
+	Non si è fatta distinzione della complessità del testo da riconoscere, siccome uno strumento che deve essere affidabile, lo deve essere sempre, in questo termini vi è una analisi senza pietà. Attualmente come si vede poi dai grafici successivi kraken sbaglia una parola ogni tre mediamente, date le prove fotografiche, si deduce che lo sbaglio è legittimo, in quanto ad esempio la parola "casa" può essere letta come "caso" facendo intuire che generalmente le parola vengono abbastanza riconosciute e che ci sia confusione su alcune lettere, questo non sarebbe un grosso problema se si dovesse pensare di filtrare le trascrizioni per contesto, riconoscendo quindi le parole che non c'entrano con il contesto e fare la sostituzione con la parola più probabile. Ma data il continuo proliferare di "Utonti" lo strumento deve semplicemente raggiungere un certo livello di affidabilità, tale da offrire la possibilità di catalogare gli errori come irrilevanti. 
+	
+	
+	%In questa sezione devono essere riportati i risultati degli esperimenti condotti. Come prima cosa vanno definite e spiegate le metriche di valutazione adottate: accuratezza (per i problemi di classificazione), errore quadratico medio o errore assoluto medio (per i problemi di regressione), ecc.
+	%Se avete affrontato un problema di classificazione pu\`o essere utile introdurre e riportare le matrici di confusione.
+	
+	%Altre metriche che non sono state introdotte nel corso (come ad esempio le curve ROC, Receiver Operating Curve) possono ovviamente essere prese in considerazione, purch\`e debitamente studiate e comprese.
+	
+	%I risultati sono solitamente riassunti in forma di tabelle o grafici (o entrambi) che devono essere opportunamente discussi. Ricordarsi di riportare nei grafici legende e etichette degli assi. 
+	%Nel commentare i risultati \`e infine suggerito provare a evidenziare (tramite esempi di dove ha fallito) le limitazioni dell'algoritmo utilizzato o, viceversa, i punti di forza rispetto a potenziali alternative. 
+	
+	
+	\section{Conclusioni}
+	In conclusione, come si può vedere dalla sezione precedente, questo lavoro raggiunge il criterio minimo di accettazione per il processo, in quanto l'OCR in questo stato non garantisce una certa affidabilità per la quale lo si può usare ciecamente nella digitalizzazione dei documenti della PC, in quanto ancora qualche scritta non la riconosce propriamente, generalmente, però rimane utile per fare il lavoro più grande.\newline\newline 
+	
+	Questa situazione però non è del tutto brutta, siccome i risultati ottenuti dimostrano che è ragionevole sviluppare uno strumento specifico per gli obiettivi previsti dalla legge. A livello di comparto questo apre la strada per richiedere i fondi per dedicarsi a questa attività in non concorrenza con altre attività più importanti a livello ospedaliero.\newline\newline
+	
+	\subsection{Per il futuro}
+	
+	Con la Speranza di non trovarsi a dover gestire lavori complessi a favore di una qualche legge per la quale il raggiungimento dell'obiettivo è impostato per il tempo prossimo, L'idea è quella di parlare con il DPO aziendale per avere accesso ad un campione sufficientemente grande di documenti, facendo una breve riflessione, se il totale di circa 150 pagine di quaderno hanno portato a questi risultati, presuppongo che ne servano almeno mille di pagine per avere un risultato che possa risultare in una qualche affidabilità. Allo stato attuale il progetto da me presentato è stato ritenuto dal Dirigente Generale qualcosa d'interessa nazionale, di conseguenza, si fa largo anche l'ipotesi che con i fondi ricevuti, si possa variare la pianta organica del comparto per l'acquisizione di una persona a tempo determinato, che abbia il solo scopo di preparare il campione di addestramento. Date le generali difficoltà a mettere ordine tra tutte le informazioni dispersive della documentazione di kraken, si prevede comunque di fare solo un fine tuning (non sembra che sia la mossa migliore pensare di creare un modello da 0)
+	
+	%\section{Contributi}
+	%Nella sezione Contributi vanno inseriti i contributi dei vari componenti del gruppo di lavoro, ovvero chi ha ideato, sviluppato, implementato le specifiche parti del progetto. Ovviamente i contributi possono essere anche paritari, se ogni membro del gruppo ha contribuito in egual misura.
+	
+	%\printbibliography
+	
 \end{document}
