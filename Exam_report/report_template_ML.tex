@@ -145,6 +145,10 @@
 		\item visualizzare, in caso di necessit\`a, l'immagine originale della pagina, preservando l'aspetto grafico del documento.
 	\end{itemize}
 	
+	\subsection{Come funziona Kraken}
+	
+	Kraken utilizza reti neurali profonde di tipo CRNN (Convolutional Recurrent Neural Network) addestrate con la funzione di costo CTC (Connectionist Temporal Classification). L’immagine della riga viene trasformata da una serie di strati convoluzionali in una sequenza di feature, che viene poi modellata da strati ricorrenti (es. LSTM bidirezionali). L’output è una distribuzione di probabilità sui caratteri a ogni passo temporale e, tramite la decodifica CTC, viene ricostruita la sequenza testuale. Questo approccio consente di allenare il modello direttamente su coppie immagine‑trascrizione senza allineamento esplicito carattere‑pixel.
+	
 	\subsection{Il modello}
 	
 	Per l'addestramento \`e stato utilizzato come punto di partenza il modello \texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno dei pi\`u adatti alla lettura di manoscritti latini tardo-medievali e di et\`a moderna. La scelta \`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
