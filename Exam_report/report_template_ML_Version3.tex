@@ -28,21 +28,21 @@
 
 % Configurazione globale per minted: riquadro, numeri di riga, font più piccolo e spezzatura aggressiva
 \setminted{
-  frame=single,
-  linenos,
-  fontsize=\footnotesize, % o \scriptsize se vuoi ancora più margine
-  breaklines,
-  breakanywhere,
-  numbersep=4pt,      % distanza tra numeri di riga e codice
-  xleftmargin=6pt,    % margine sinistro interno al frame
-  framesep=2pt        % distanza testo-bordo
+	frame=single,
+	linenos,
+	fontsize=\footnotesize, % o \scriptsize se vuoi ancora più margine
+	breaklines,
+	breakanywhere,
+	numbersep=4pt,      % distanza tra numeri di riga e codice
+	xleftmargin=6pt,    % margine sinistro interno al frame
+	framesep=2pt        % distanza testo-bordo
 }
 
 \usepackage{csquotes} % consigliato con biblatex
 \usepackage{biblatex} %Imports biblatex package
 \addbibresource{riferimenti.bib} %Import the bibliography file
 
-\title{\color{FireBrick}\bf{Modello italiano per Kraken}}
+\title{\color{FireBrick}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
 \author[1]{\color{FireBrick}\bf{Francesco Rombaldoni}}
 %\author[2]{\color{FireBrick}\bf{Studente autore 2}}
 
@@ -52,860 +52,968 @@
 \date{}
 
 \begin{document}
-\fancypagestyle{firstpage}
-{
-  \fancyhead[L]{\footnotesize{\bf{Universit\`a degli Studi di Urbino Carlo Bo}}}
-  \fancyhead[R]{\footnotesize{\bf{CdL Magistrale Informatica e Innovazione Digitale}}}
-}
-\thispagestyle{firstpage}
-
-\pagestyle{fancy}
-
-\fancyhead{} % clear all header fields
-\fancyhead[L]{\color{Black}{\footnotesize{\thetitle}}}
-\fancyfoot{} % clear all footer fields
-\fancyfoot[R]{\footnotesize{\bf{\thepage}}}
-\fancyfoot[L]{\footnotesize{\bf{Progetto corso Machine Learning}}}
-
-
-
-\twocolumn
-%------------------------------------------                                       
-%                      Title
-%------------------------------------------
-[{
-  \maketitle
-  \thispagestyle{firstpage}
-  \title{\color{Black}\bf{Modello italiano per Kraken}}
-  %------------------------------------------                                                           
-  %                   Abstract
-  %------------------------------------------
-  \normalsize
-  \begin{tcolorbox}[  colback = WhiteSmoke,
-                      ,
-                      width=\linewidth,
-                      arc=1mm, auto outer arc,
-                    ]
-    \section*{Riassunto}
-    %In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
-
-    Il lavoro svolto per l'esame consiste nel \emph{fine tuning} di un modello pre-esistente di Kraken, con l'obiettivo di ottenere un sistema in grado di leggere manoscritti in lingua italiana. Nel contesto in cui lavoro (pubblica amministrazione) esiste infatti una forte necessit\`a di strumenti OCR avanzati per la digitalizzazione di documenti storici che, a causa delle normative sulla privacy, dovranno essere distrutti dopo la scadenza dei tempi di conservazione.
-
-    Per raggiungere questo obiettivo sono stati scelti alcuni quaderni universitari di cui erano gi\`a disponibili le trascrizioni manuali. Le pagine sono state scannerizzate, pre-elaborate con strumenti standard (in particolare ScanTailor) e quindi utilizzate per generare il \emph{ground truth} necessario all'addestramento. I dati cos\`i ottenuti sono stati organizzati e normalizzati mediante una serie di script in Python, sviluppati appositamente per l'utilizzo con Kraken.
-
-    Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nel quaderno di riferimento, che raggiunge un'accuratezza media di circa l'88\% a livello di parola su pagine simili a quelle di addestramento. Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
-  \end{tcolorbox}
-  \vspace{1.5ex}
-}]
-
-
-%------------------------------------------
-%                   Main Matter
-%------------------------------------------
-
-\section{Introduzione}
-%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
-
-\subsection{Il problema}
-
-Il problema affrontato in questo lavoro nasce dall'esigenza di adeguare la gestione documentale dell'INRCA alle normative vigenti in materia di protezione dei dati personali e conservazione dei documenti, in particolare il Regolamento (UE) 2016/679 (GDPR) e la norma ISO/IEC 21964, che disciplina la transizione dal supporto cartaceo al digitale.
-
-L'INRCA, in quanto istituto sia ospedaliero sia di ricerca, \`e tenuto a garantire il rispetto di tali obblighi, in particolare per quanto riguarda la catalogazione, l'archiviazione e la successiva distruzione dei documenti sensibili. Ci\`o rende necessario disporre di strumenti OCR affidabili, in grado di supportare la digitalizzazione massiva di documenti storici, spesso contenenti anche parti manoscritte.
-
-Una prima analisi ha preso in considerazione alcuni software commerciali largamente diffusi:
-\begin{itemize}
-  \item Wondershare PDFelement;
-  \item ABBYY FineReader PDF 16;
-  \item Nanonets;
-  \item Adobe Acrobat.
-\end{itemize}
-
-Tali strumenti sono stati tuttavia scartati in quanto inadeguati al caso d'uso specifico. In particolare, nessuno di essi offre un supporto realmente efficace per documenti contenenti porzioni manoscritte, come ricette mediche o note su pazienti, che costituiscono una parte rilevante della documentazione sanitaria.
-
-In linea teorica, gli OCR basati su tecnologie di intelligenza artificiale sarebbero gli unici in grado di affrontare il carico di lavoro descritto. Tuttavia, la maggior parte delle soluzioni commerciali pi\`u avanzate richiede la trasmissione remota delle pagine da analizzare verso servizi cloud esterni, il che non consente di garantire un controllo completo sulla sicurezza delle informazioni trattate.
-
-Alla luce di queste considerazioni, la necessit\`a \`e quella di disporre di un sistema OCR:
-\begin{itemize}
-  \item sufficientemente efficiente da poter essere eseguito interamente in locale su una postazione di reparto;
-  \item configurabile e controllabile dagli operatori interni;
-  \item adatto a gestire manoscritti in lingua italiana.
-\end{itemize}
-
-Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre-esistenti sulla base di dati di addestramento personalizzati. Altre soluzioni open source esistenti sono risultate troppo immature per un utilizzo pratico, mentre le soluzioni commerciali pi\`u mature sono risultate economicamente e tecnicamente poco adeguate al contesto.
-
-\subsection{Input e output}
-
-Gli \emph{input} del sistema sono le scannerizzazioni dei documenti da digitalizzare, sottoposte preventivamente a un processo di pulizia e normalizzazione tramite ScanTailor (correzione della centratura, ritaglio delle parti non informative, adeguamento del contrasto), mantenendo la risoluzione originale di 600 dpi.
-
-Gli \emph{output} considerati in questo lavoro sono file di testo semplice (\texttt{.txt}) contenenti le trascrizioni delle pagine. Ai fini specifici del progetto, non \`e stato ritenuto necessario ottenere un PDF in cui il testo sia selezionabile e sovrapposto all'immagine: l'obiettivo \`e piuttosto quello di creare, per ciascun documento, un ``pacchetto'' costituito dall'immagine scannerizzata e dalla relativa trascrizione.
-
-Questa organizzazione consente di:
-\begin{itemize}
-  \item eseguire ricerche testuali sulle trascrizioni per individuare rapidamente i documenti di interesse;
-  \item visualizzare, in caso di necessit\`a, l'immagine originale della pagina, preservando l'aspetto grafico del documento.
-\end{itemize}
-
-\subsection{Il modello}
-
-Per l'addestramento \`e stato utilizzato come punto di partenza il modello \texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno dei pi\`u adatti alla lettura di manoscritti latini tardo-medievali e di et\`a moderna. La scelta \`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
-
-L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una grande variet\`a di manoscritti latini possa costituire una buona base di partenza per un \emph{fine tuning} mirato sui manoscritti italiani, richiedendo quindi un numero relativamente contenuto di pagine annotate manualmente.
-
-\section{Metodi}
-
-Il processo di addestramento ha seguito una metodologia articolata in pi\`u fasi, resa pi\`u complessa dal fatto che Kraken, originariamente nato come progetto open source, \`e stato successivamente integrato in iniziative istituzionali europee. Nel tempo, parte della documentazione \`e stata spostata o resa meno facilmente accessibile, e molte delle guide online puntano oggi a repository non pi\`u mantenute o a pagine che restituiscono errori 404.
-
-Per orientarmi in questo scenario frammentato ho fatto ampio uso di strumenti di supporto (tra cui GitHub Copilot e ChatGPT, resi disponibili dal progetto scolastico di GitHub), al fine di ricostruire una pipeline di addestramento completa e riproducibile.
-
-Dal punto di vista operativo, disponendo di una scheda grafica NVIDIA, ho scelto come sistema operativo Pop\!\_OS, in quanto offre un supporto immediato ai driver proprietari NVIDIA e all'uso dei CUDA core (nel mio caso versione 12). Seguendo le indicazioni raccolte, ho creato un ambiente \texttt{conda} dedicato e installato Kraken tramite \texttt{pip}, insieme alle dipendenze necessarie.
-
-Tutta la logica di preparazione dei dati e gestione dei file di \emph{ground truth} \`e stata implementata in Python, con l'obiettivo di ottenere uno strato di astrazione relativamente semplice da riutilizzare in contesti simili.
-
-\subsection{Gestione delle immagini}
-
-Come base di addestramento sono stati utilizzati circa 150 fogli di appunti universitari, redatti a mano e gi\`a trascritti in precedenza. I fogli sono stati scannerizzati utilizzando una stampante da ufficio professionale con risoluzione di 600 dpi.
-
-Le immagini ottenute sono state quindi pre-elaborate con il software open source ScanTailor, utilizzando principalmente le impostazioni standard. In questa fase sono stati corretti:
-\begin{itemize}
-  \item la centratura delle pagine;
-  \item il ritaglio dei margini non informativi;
-  \item il bilanciamento complessivo del contenuto visivo, mantenendo la risoluzione a 600 dpi.
-\end{itemize}
-
-Successivamente, ogni pagina \`e stata suddivisa in singole righe di testo. A ciascuna riga \`e stata associata la relativa trascrizione manuale, in modo da costruire un dataset di coppie immagine-testo utilizzabile per il \emph{fine tuning}. La struttura dei file \`e stata organizzata in cartelle dedicate per le immagini e per i testi, con convenzioni di denominazione coerenti per facilitare gli abbinamenti automatici.
-
-\subsection{Il processo di addestramento}
-
-\paragraph{Generazione del \emph{ground truth} dai file \texttt{.md} riga per riga}
-
-Le trascrizioni manuali erano conservate in formato Markdown, scelta che rendeva pi\`u agevole la lettura umana ma richiedeva una fase di pulizia prima di poter essere utilizzate come \emph{ground truth}. Per questo \`e stato sviluppato uno script Python che, dato un insieme di immagini e i corrispondenti file \texttt{.md}, genera un file \texttt{ground\_truth.txt} nel formato atteso da Kraken.
-
-\textbf{Comando utilizzato}\newline\newline
-
-\begin{minted}{bash}
-python3 make_gt_from_line_md.py \
-    --images_dir "./00_images" \
-    --md_dir "./01_texts" \
-    --out "gt_new/ground_truth_new.txt"
-\end{minted}
-
-\textbf{Script Python per la generazione del \emph{ground truth}}\newline\newline
-
-\begin{minted}{python}
-#!/usr/bin/env python3
-"""
-make_gt_from_line_md.py
-
-Genera gt/ground_truth.txt associando ogni immagine (images_dir) al file markdown corrispondente
-(md_dir) usando lo stesso stem (es: 100_page1_line001.png -> 100_page1_line001.md).
-
-Uso:
-python3 make_gt_from_line_md.py --images_dir "./00_images" --md_dir "./01_texts" --out "./gt/ground_truth.txt"
-
-Opzioni:
---images_glob : pattern per le immagini (default '*.*')
---join_multiline : se true concatena tutte le righe del .md in una sola linea (default True)
---relpath : se true scrive path relative per le immagini nel GT
-"""
-import argparse
-from pathlib import Path
-import unicodedata
-import re
-import sys
-
-def strip_markdown(s):
-    # rimozioni semplici markdown, non un parser completo
-    s = re.sub(r'!\[.*?\]\(.*?\)', '', s)    # immagini
-    s = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', s)  # link [text](url) -> text
-    s = re.sub(r'[`*_]{1,}', '', s)          # backticks, asterischi, underscore
-    s = re.sub(r'^\s*>\s*', '', s, flags=re.M) # blockquote
-    s = re.sub(r'\s+', ' ', s)
-    return s.strip()
-
-def normalize(s):
-    return unicodedata.normalize("NFC", s).strip()
-
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('--images_dir', required=True)
-    p.add_argument('--md_dir', required=True)
-    p.add_argument('--out', default='gt/ground_truth.txt')
-    p.add_argument('--images_glob', default='*.*', help="glob pattern for images, default '*.*'")
-    p.add_argument('--join_multiline', action='store_true', default=True,
-                   help='Concatena più linee del .md in una')
-    p.add_argument('--no-join', dest='join_multiline', action='store_false',
-                   help='Non concatenare, usa solo la prima riga')
-    p.add_argument('--relpath', action='store_true', default=True,
-                   help='Usa path relative per le immagini nel GT')
-    args = p.parse_args()
-
-    images_dir = Path(args.images_dir)
-    md_dir = Path(args.md_dir)
-    outp = Path(args.out)
-    outp.parent.mkdir(parents=True, exist_ok=True)
-
-    imgs = sorted([p for p in images_dir.glob(args.images_glob) if p.is_file()])
-    if not imgs:
-        print("Nessuna immagine trovata in", images_dir, file=sys.stderr)
-        sys.exit(1)
-
-    missing_md = []
-    written = 0
-    with outp.open('w', encoding='utf-8') as fh:
-        for img in imgs:
-            stem = img.stem
-            md_path = md_dir / (stem + '.md')
-            if not md_path.exists():
-                # tenta anche altre estensioni comuni
-                found = None
-                for ext in ['.txt', '.mdown', '.markdown']:
-                    cand = md_dir / (stem + ext)
-                    if cand.exists():
-                        found = cand
-                        break
-                if found:
-                    md_path = found
-                else:
-                    missing_md.append((img.name, str(md_path)))
-                    continue
-            text = md_path.read_text(encoding='utf-8')
-            # split in non-empty lines
-            lines = [normalize(strip_markdown(l)) for l in text.splitlines()
-                     if l.strip()]
-            if not lines:
-                # vuoto -> segnala e salta
-                missing_md.append((img.name, f"{md_path} (vuoto)"))
-                continue
-            if args.join_multiline:
-                txt = ' '.join(lines)
-            else:
-                txt = lines[0]
-            # pulizia finale
-            txt = normalize(strip_markdown(txt))
-            # path scritto: relativo se richiesto
-            if args.relpath:
-                img_path_str = str(Path(args.images_dir)
-                                   .joinpath(img.name).as_posix())
-            else:
-                img_path_str = str(img.resolve())
-            # assicurati che non ci siano tab/newline nel testo
-            txt = txt.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ')
-            fh.write(f"{img_path_str}\t{txt}\n")
-            written += 1
-
-    print(f"Wrote {written} lines to {outp}")
-    if missing_md:
-        print(f"Missing or empty md for {len(missing_md)} images (showing up to 20):")
-        for m in missing_md[:20]:
-            print("  -", m[0], "expected", m[1])
-
-if __name__ == '__main__':
-    main()
-\end{minted}
-
-\paragraph{Normalizzazione del \emph{ground truth} e creazione di \emph{splits} e charset}
-
-Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test, e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati.
-
-\begin{minted}{bash}
-python3 validate_and_normalize_gt.py \
-    --gt "gt_new/ground_truth_new.txt" \
-    --root "." \
-    --out "gt_new/ground_truth_new_normalized.txt"
-\end{minted}
-
-\textbf{Script Python per la validazione e normalizzazione del \emph{ground truth}}\newline\newline
-
-\begin{minted}{python}
-#!/usr/bin/env python3
-"""
-validate_and_normalize_gt.py
-Verifica e normalizza un ground_truth.txt esistente.
-
-Uso:
-python3 validate_and_normalize_gt.py --gt gt/ground_truth.txt --root . \
-    --out gt/ground_truth_normalized.txt --map substitutions.txt
-
-Output: file normalizzato e report console con problemi trovati.
-Map file (opzionale): plain text con righe "from<TAB>to" per sostituzioni
-(appl. prima della normalizzazione NFC).
-"""
-import argparse, sys, unicodedata
-from pathlib import Path
-from collections import defaultdict
-
-def load_map(path):
-    m = {}
-    if not path:
-        return m
-    for ln in open(path, encoding='utf-8'):
-        ln = ln.rstrip('\n')
-        if not ln or ln.startswith('#'):
-            continue
-        if '\t' in ln:
-            a,b = ln.split('\t',1)
-        else:
-            parts = ln.split(None,1)
-            if len(parts)!=2:
-                continue
-            a,b = parts
-        m[a] = b
-    return m
-
-def apply_map(s,mapping):
-    for a,b in mapping.items():
-        s = s.replace(a,b)
-    return s
-
-def normalize_text(s):
-    s = s.strip()
-    s = ' '.join(s.split())  # collapse whitespace
-    s = unicodedata.normalize('NFC', s)
-    return s
-
-def main():
-    p = argparse.ArgumentParser()
-    p.add_argument('--gt', required=True)
-    p.add_argument('--root', default='.',
-                  help='Root dir to resolve image paths')
-    p.add_argument('--out', default=None,
-                  help='Output normalized GT file (if omitted, no file is written)')
-    p.add_argument('--map', default=None,
-                  help='Optional substitutions file (from<TAB>to)')
-    args = p.parse_args()
-
-    mapping = load_map(args.map)
-    root = Path(args.root)
-    gt = Path(args.gt)
-    if not gt.exists():
-        print('gt file not found', gt, file=sys.stderr); sys.exit(1)
-
-    seen_paths = set()
-    missing = []
-    empty = []
-    bad_lines = []
-    duplicates = defaultdict(int)
-    total = 0
-    normalized_lines = []
-
-    for i, ln in enumerate(gt.read_text(encoding='utf-8').splitlines(), start=1):
-        if not ln.strip():
-            continue
-        if '\t' not in ln:
-            bad_lines.append((i, ln))
-            continue
-        path, txt = ln.split('\t',1)
-        path = path.strip()
-        txt = txt.strip()
-        txt = apply_map(txt, mapping)
-        txt = normalize_text(txt)
-        if txt == '':
-            empty.append((i,path))
-        pth = (root / path) if not Path(path).is_absolute() else Path(path)
-        if not pth.exists():
-            missing.append((i, path))
-        duplicates[path] += 1
-        seen_paths.add(path)
-        normalized_lines.append((path, txt))
-        total += 1
-
-    # report
-    print(f"Total lines read: {total}")
-    if bad_lines:
-        print(f"Lines without tab: {len(bad_lines)} (showing up to 10):")
-        for i,ln in bad_lines[:10]:
-            print(i, ln[:200])
-    if empty:
-        print(f"Empty transcriptions: {len(empty)}")
-    if missing:
-        print(f"Missing image files: {len(missing)} (showing up to 10):")
-        for i,p in missing[:10]:
-            print(i, p)
-    dup_list = [p for p,c in duplicates.items() if c>1]
-    if dup_list:
-        print(f"Duplicate image entries: {len(dup_list)} (showing up to 10):")
-        for p in dup_list[:10]:
-            print(p, duplicates[p])
-
-    # write normalized file if requested
-    if args.out:
-        outp = Path(args.out)
-        outp.parent.mkdir(parents=True, exist_ok=True)
-        with outp.open('w', encoding='utf-8') as fh:
-            for path,txt in normalized_lines:
-                # ensure no embedded tabs/newlines in txt
-                txt_clean = txt.replace('\t',' ').replace('\r',' ') \
-                               .replace('\n',' ')
-                fh.write(f"{path}\t{txt_clean}\n")
-        print(f"Wrote normalized ground truth to {outp}")
-
-if __name__ == '__main__':
-    main()
-\end{minted}
-
-Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato.
-
-\begin{minted}{bash}
-python3 split_and_charset.py \
-    gt_new/ground_truth_new_normalized.txt \
-    --out splits_new \
-    --val 0.05 \
-    --test 0.05 \
-    --group-by-page \
-    --page-sep "_"
-\end{minted}
-
-\textbf{Script Python per la creazione degli \emph{splits} e del charset}\newline\newline
-
-\begin{minted}{python}
-#!/usr/bin/env python3
-"""
-split_and_charset.py
-
-Legge un ground truth (path<TAB>trascrizione per riga), normalizza le
-trascrizioni (NFC), estrae il charset e crea i file splits
-(train/val/test) e charset.txt.
-
-Esempio:
-python3 split_and_charset.py gt/ground_truth_normalized.txt --out splits \
-    --val 0.05 --test 0.05 --group-by-page --page-sep "_"
-"""
-import argparse
-import unicodedata
-import random
-from pathlib import Path
-from collections import defaultdict
-
-def normalize_text(s):
-    return unicodedata.normalize("NFC", s).strip()
-
-def read_ground_truth(gt_path):
-    entries = []
-    gt_path = Path(gt_path)
-    if not gt_path.exists():
-        raise FileNotFoundError(f"Ground truth file not found: {gt_path}")
-    with gt_path.open("r", encoding="utf-8") as fh:
-        for lineno, line in enumerate(fh, 1):
-            raw = line.rstrip("\n")
-            if not raw.strip():
-                continue
-            if "\t" in raw:
-                img, txt = raw.split("\t", 1)
-            else:
-                parts = raw.split(None, 1)
-                if len(parts) != 2:
-                    print(f"Warning: salto linea {lineno} (formato non riconosciuto): {raw}")
-                    continue
-                img, txt = parts
-            txt = normalize_text(txt)
-            if txt == "":
-                # skip empty transcription lines by default
-                print(f"Warning: trascrizione vuota a linea {lineno}, salto.")
-                continue
-            entries.append((img, txt))
-    return entries
-
-def group_entries(entries, group_by_page, page_sep):
-    if not group_by_page:
-        # no grouping: return list of single-entry groups
-        return [[e] for e in entries]
-    groups = defaultdict(list)
-    for img, txt in entries:
-        stem = Path(img).stem
-        if page_sep and page_sep in stem:
-            key = stem.split(page_sep, 1)[0]
-        else:
-            # fallback: group by parent directory name
-            parent = str(Path(img).parent)
-            key = parent
-        groups[key].append((img, txt))
-    return list(groups.values())
-
-def split_groups(groups, val_frac, test_frac, seed):
-    random.seed(seed)
-    random.shuffle(groups)
-    total = sum(len(g) for g in groups)
-    n_val = int(total * val_frac + 0.5)
-    n_test = int(total * test_frac + 0.5)
-    n_train = total - n_val - n_test
-
-    train, val, test = [], [], []
-    counts = {"train":0, "val":0, "test":0}
-    # greedy assign groups to keep groups intact and approximate counts
-    for g in groups:
-        # compute deficits (target - current)
-        deficits = {
-            "train": n_train - counts["train"],
-            "val": n_val - counts["val"],
-            "test": n_test - counts["test"]
-        }
-        # choose split with largest positive deficit, else train
-        pick = max(deficits.items(), key=lambda x: (x[1], x[0]))[0]
-        if pick == "train":
-            train.extend(g); counts["train"] += len(g)
-        elif pick == "val":
-            # if val would exceed target, fallback to train
-            if counts["val"] + len(g) <= n_val:
-                val.extend(g); counts["val"] += len(g)
-            else:
-                train.extend(g); counts["train"] += len(g)
-        else:
-            if counts["test"] + len(g) <= n_test:
-                test.extend(g); counts["test"] += len(g)
-            else:
-                train.extend(g); counts["train"] += len(g)
-    return train, val, test
-
-def write_split(out_dir, name, entries):
-    out = Path(out_dir)
-    out.mkdir(parents=True, exist_ok=True)
-    path = out / f"{name}.txt"
-    with path.open("w", encoding="utf-8") as fh:
-        for img, txt in entries:
-            fh.write(f"{img}\t{txt}\n")
-    print(f"Wrote {len(entries)} lines to {path}")
-
-def extract_charset(entries, out_dir):
-    chars = set()
-    for _, txt in entries:
-        chars.update(txt)
-    chars.discard("\n"); chars.discard("\r")
-    chars = sorted(chars)
-    out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
-    charset_path = out / "charset.txt"
-    with charset_path.open("w", encoding="utf-8") as fh:
-        for c in chars:
-            fh.write(c + "\n")
-    with (out / "charset_one_line.txt").open("w", encoding="utf-8") as fh:
-        fh.write("".join(chars))
-    print(f"Extracted {len(chars)} unique characters -> {charset_path}")
-
-def main():
-    p = argparse.ArgumentParser(description="Genera splits e charset da ground_truth")
-    p.add_argument("gt",
-                   help="Percorso al file ground_truth (path<TAB>trascrizione per riga)")
-    p.add_argument("--out", "-o", default="splits", help="Cartella di output")
-    p.add_argument("--val", type=float, default=0.05,
-                   help="Frazione per validation (default 0.05)")
-    p.add_argument("--test", type=float, default=0.05,
-                   help="Frazione per test (default 0.05)")
-    p.add_argument("--seed", type=int, default=42,
-                   help="Seed per random shuffle")
-    p.add_argument("--group-by-page", action="store_true",
-                   help="Evitare contaminazione raggruppando righe della stessa pagina")
-    p.add_argument("--page-sep", default="_",
-                   help="Separatore per estrarre ID pagina dal file stem "
-                        "(es: '0001_01.png' -> pag=0001). Usato solo con --group-by-page")
-    args = p.parse_args()
-
-    entries = read_ground_truth(args.gt)
-    if not entries:
-        print("Nessuna entry trovata nel ground truth. Esco.")
-        return
-    print(f"Letti {len(entries)} righe dal ground truth.")
-    groups = group_entries(entries, args.group_by_page, args.page_sep)
-    print(f"Raggruppati in {len(groups)} gruppi (group_by_page={args.group_by_page}).")
-    train, val, test = split_groups(groups, args.val, args.test, args.seed)
-    write_split(args.out, "train", train)
-    write_split(args.out, "val", val)
-    write_split(args.out, "test", test)
-    write_split(args.out, "ground_truth_all", train + val + test)
-    extract_charset(entries, args.out)
-    print("Fatto.")
-
-if __name__ == "__main__":
-    main()
-\end{minted}
-
-Come verifica finale di questa fase, \`e stato controllato che il file prodotto fosse coerente con le attese:
-
-\begin{minted}{bash}
-wc -l splits_new/*.txt
-sed -n '1,5p' splits_new/train.txt
-\end{minted}
-
-\paragraph{Filtraggio delle immagini per la lettura con \texttt{ketos}}
-
-Per facilitare la lettura delle immagini da parte di \texttt{ketos} (lo strumento di training associato a Kraken), le immagini delle righe sono state ulteriormente normalizzate con \texttt{ImageMagick}:
-
-\begin{minted}{bash}
-mkdir -p processed/lines
-
-for f in 00_images/*.png; do
-    base=$(basename "$f")
-    convert "$f" \
-        -deskew 40% \
-        -colorspace Gray \
-        -resize x64 \
-        -background white -gravity center -extent 0x64 \
-        "processed/lines/$base"
-done
-\end{minted}
-
-Una volta ottenute le immagini nel formato desiderato, i percorsi all'interno dei file di \emph{ground truth} sono stati aggiornati:
-
-\begin{minted}{bash}
-sed 's|^00_images/|processed/lines/|' splits_new/train.txt > splits_new/train_proc.txt
-sed 's|^00_images/|processed/lines/|' splits_new/val.txt   > splits_new/val_proc.txt
-sed 's|^00_images/|processed/lines/|' splits_new/test.txt  > splits_new/test_proc.txt
-\end{minted}
-
-\paragraph{Mappatura delle immagini}
-
-Per comodit\`a, sono stati poi estratti i soli percorsi delle immagini, da utilizzare come input diretto per \texttt{ketos}:
-
-\begin{minted}{bash}
-awk -F'\t' '{print $1}' splits_new/train_proc.txt > splits_new/train_images.txt
-awk -F'\t' '{print $1}' splits_new/val_proc.txt   > splits_new/val_images.txt
-awk -F'\t' '{print $1}' splits_new/test_proc.txt  > splits_new/test_images.txt
-\end{minted}
-
-\paragraph{Creazione dei file \emph{sidecar} compatibili con \texttt{ketos}}
-
-Poich\'e le versioni pi\`u recenti di Kraken delegano a \texttt{ketos} la gestione del training, \`e stato necessario generare, per ogni immagine, un file \texttt{.gt.txt} contenente la trascrizione corrispondente. Il seguente script Python crea automaticamente tali file \emph{sidecar}:
-
-\begin{minted}{bash}
-python3 - <<'PY'
-from pathlib import Path
-
-def write_sidecars(split_path: str):
-    p = Path(split_path)
-    created = 0
-    with p.open(encoding='utf-8') as f:
-        for i, line in enumerate(f, 1):
-            line = line.rstrip('\n')
-            if not line.strip():
-                continue
-            try:
-                img, txt = line.split('\t', 1)
-            except ValueError:
-                print(f"[WARN] line {i} without TAB in {split_path}: {line[:120]}...")
-                continue
-            img_path = Path(img)
-            if not img_path.exists():
-                print(f"[WARN] missing image at line {i}: {img_path}")
-                continue
-            sidecar = img_path.with_suffix('.gt.txt')  # es: foo.png -> foo.gt.txt
-            text = txt.strip('\r\n')
-            sidecar.write_text(text + '\n', encoding='utf-8')
-            created += 1
-    return created
-
-total = 0
-for sp in ['splits_new/train_proc.txt',
-           'splits_new/val_proc.txt',
-           'splits_new/test_proc.txt']:
-    if Path(sp).exists():
-        c = write_sidecars(sp)
-        print(f"[OK] {sp}: created {c} sidecar files")
-        total += c
-print("Total new sidecars created:", total)
-PY
-\end{minted}
-
-\textbf{Verifica dei file \emph{sidecar}}\newline
-
-\begin{minted}{bash}
-python3 - <<'PY'
-from pathlib import Path
-missing = []
-for lst in ['splits_new/train_images.txt',
-            'splits_new/val_images.txt',
-            'splits_new/test_images.txt']:
-    p = Path(lst)
-    if not p.exists():
-        continue
-    for l in p.read_text(encoding='utf-8').splitlines():
-        img = Path(l.strip())
-        if not img.exists():
-            continue
-        gt = img.with_suffix('.gt.txt')
-        if not gt.exists():
-            missing.append(str(img))
-print("Total images without sidecar:", len(missing))
-if missing[:10]:
-    print("First missing:", missing[:10])
-PY
-\end{minted}
-
-\paragraph{Training}
-
-Infine, il modello \`e stato addestrato con il seguente comando:
-
-\begin{minted}{bash}
-ketos train \
-    -f path \
-    -i "models/Tridis_Medieval_EarlyModern.mlmodel" \
-    --resize union \
-    -q early \
-    -N 40 \
-    --min-epochs 5 \
-    --lag 10 \
-    -B 4 \
-    -r 5e-5 \
-    -o models/italian_finetuned.mlmodel_best.mlmodel \
-    -t splits_new/train_images.txt \
-    -e splits_new/val_images.txt
-\end{minted}
-
-\section{Risultati sperimentali}
-
-In questa sezione vengono riportati i risultati ottenuti dal modello fine-tunato in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
-
-\subsection{Metrica utilizzata}
-
-Dato che il modello opera riga per riga producendo sequenze di caratteri, la valutazione naturale sarebbe basata su indicatori quali il \emph{Character Error Rate} (CER) o il \emph{Word Error Rate} (WER). Nel presente progetto, tuttavia, la metrica pi\`u rilevante per l'utente finale (l'operatore che utilizza le trascrizioni per la ricerca documentale e per adempiere agli obblighi normativi) \`e la correttezza delle singole parole.
-
-Per questo motivo si considera la seguente metrica intuitiva:
-
-\[
-\text{Accuratezza parole} =
-\frac{\text{\# parole riconosciute correttamente}}{\text{\# parole totali}}.
-\]
-
-I valori riportati sono stimati su campioni di circa 100 parole per ciascuno scenario di test.
-
-\subsection{Scenario 1: pagine usate in addestramento}
-
-Nel primo scenario il modello \`e stato testato su pagine appartenenti allo stesso quaderno utilizzato per il training, quindi:
-
-\begin{itemize}
-  \item stessa persona che ha scritto a mano tutte le pagine;
-  \item stessa tipologia di carta e impaginazione;
-  \item condizioni di scansione controllate (600 dpi e pre-elaborazione con ScanTailor).
-\end{itemize}
-
-In questo caso il modello ottiene, su pi\`u campioni di circa 100 parole ciascuno, un'accuratezza compresa tra l'87\% e il 90\%. Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}).
-
-Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dell'autore del quaderno.
-
-\subsection{Scenario 2: altra persona, stessa tipologia di fogli}
-
-Nel secondo scenario l'OCR \`e stato applicato a pagine manoscritte da una persona diversa, ma su fogli con caratteristiche simili (righe prestampate, impaginazione analoga a quella del quaderno usato in addestramento).
-
-In questo contesto l'accuratezza a livello di parola scende a circa il 60\% (ossia circa 60 parole corrette su 100). L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente.
-
-Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
-
-\subsection{Ruolo della qualit\`a di scansione}
-
-Durante i test \`e emerso che una parte consistente delle difficolt\`a non \`e dovuta soltanto alla calligrafia, ma anche alla qualit\`a della scansione. Pagine acquisite con inclinazione eccessiva, contrasto basso o sfocatura locale risultano notevolmente pi\`u difficili da riconoscere, indipendentemente dal contenuto testuale.
-
-Ci\`o suggerisce che, oltre al miglioramento del modello, un elemento cruciale per aumentare l'accuratezza complessiva \`e il controllo del processo di acquisizione (scelta dello scanner, impostazioni stabili, eventuale normalizzazione delle immagini prima del riconoscimento).
-
-\subsection{Sintesi dei risultati}
-
-La Tabella~\ref{tab:accuracy_scenari} riassume i risultati principali:
-
-\begin{center}
-\resizebox{\columnwidth}{!}{%
-\begin{tabular}{@{}l c@{}}
-\hline
-Scenario di test & Accuratezza parole \\
-\hline
-Stessa persona (pagine del quaderno)     & 87--90\% \\
-Altra persona, stessa tipologia di fogli & \(\sim 60\%\) \\
-\hline
-\end{tabular}%
-}
-\captionof{table}{Accuratezza a livello di parola in diversi scenari di test. I valori sono stimati su campioni di circa 100 parole per scenario.}
-\label{tab:accuracy_scenari}
-\end{center}
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    ybar,
-    ymin=0,ymax=100,
-    bar width=18pt,
-    enlarge x limits=0.35,
-    ylabel={Accuratezza parole (\%)},
-    symbolic x coords={Stessa persona,Altra persona},
-    xtick=data,
-    nodes near coords,
-    nodes near coords align={vertical},
-    width=0.9\columnwidth,
-    height=0.55\textheight,
-    ylabel style={font=\small},
-    tick label style={font=\small},
-]
-\addplot coordinates {
-    (Stessa persona, 88)   % valore medio 87--90
-    (Altra persona, 60)    % valore medio stimato ~60
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Accuratezza media a livello di parola nei due scenari di test considerati. I valori corrispondono a stime ottenute da campioni di circa 100 parole ciascuno.}
-\label{fig:accuracy_bar}
-\end{figure}
-
-Dal punto di vista applicativo, questi risultati mostrano che il modello fine-tunato, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
-
-\begin{figure}[h]
-\centering
-\begin{tikzpicture}
-\begin{axis}[
-    xlabel={Numero di pagine annotate per il training},
-    ylabel={Accuratezza parole (\%)},
-    xmin=0, xmax=1050,
-    ymin=60, ymax=100,
-    xtick={0,50,100,150,300,1000},
-    ytick={60,70,80,90,100},
-    width=0.9\columnwidth,
-    height=0.55\textheight,
-    grid=both,
-    grid style={gray!20},
-    tick label style={font=\small},
-    xlabel style={font=\small},
-    ylabel style={font=\small},
-]
-\addplot[
-    color=FireBrick,
-    mark=*,
-    thick
-] coordinates {
-    (50, 75)
-    (100, 83)
-    (150, 88)
-    (300, 92)
-    (1000, 95)
-};
-\end{axis}
-\end{tikzpicture}
-\caption{Andamento qualitativo atteso dell'accuratezza a livello di parola al crescere del numero di pagine annotate utilizzate per il training. Il punto a 150 pagine corrisponde ai risultati effettivamente ottenuti; gli altri valori sono stime indicative.}
-\label{fig:accuracy_vs_pages}
-\end{figure}
-
-\section{Conclusioni}
-
-I risultati ottenuti indicano che il modello fine-tunato rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
-
-Tuttavia, il modello non \`e ancora sufficientemente robusto da poter essere impiegato in maniera completamente automatica sulla documentazione clinica reale. In particolare:
-\begin{itemize}
-  \item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 60\% di parole corrette);
-  \item la qualit\`a della scansione influisce in maniera significativa sui risultati;
-  \item permane la necessit\`a di una supervisione umana per la correzione degli errori.
-\end{itemize}
-
-Nonostante questi limiti, il lavoro dimostra la fattibilit\`a tecnica di uno strumento OCR specializzato, eseguibile interamente in locale e potenzialmente integrabile nei flussi documentali dell'istituto. Ci\`o costituisce un elemento importante per motivare la richiesta di fondi dedicati allo sviluppo di una soluzione pi\`u completa e matura.
-
-\subsection{Sviluppi futuri}
-
-Per rendere il sistema sufficientemente affidabile in ambito produttivo saranno necessari ulteriori passaggi:
-
-\begin{itemize}
-  \item aumentare significativamente il numero di pagine annotate, passando dalle circa 150 attuali ad almeno un ordine di grandezza superiore (nell'ordine delle mille pagine), in modo da migliorare la capacit\`a di generalizzazione del modello;
-  \item coinvolgere il DPO aziendale per definire un protocollo di selezione, anonimizzazione e utilizzo di un campione rappresentativo di documenti clinici reali;
-  \item rafforzare la pipeline di acquisizione delle immagini, standardizzando il processo di scansione e le operazioni di pre-elaborazione;
-  \item valutare l'introduzione di un modulo di post-processing linguistico (ad esempio, un correttore contestuale) che possa correggere automaticamente gli errori pi\`u frequenti sulla base del lessico e del contesto.
-\end{itemize}
-
-Il progetto presentato \`e stato giudicato di interesse nazionale dal Dirigente Generale dell'INRCA, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
-
-%\section{Contributi}
-%Nella sezione Contributi vanno inseriti i contributi dei vari componenti del gruppo di lavoro, ovvero chi ha ideato, sviluppato, implementato le specifiche parti del progetto. Ovviamente i contributi possono essere anche paritari, se ogni membro del gruppo ha contribuito in egual misura.
-
-%\printbibliography
-
+	\fancypagestyle{firstpage}
+	{
+		\fancyhead[L]{\footnotesize{\bf{Universit\`a degli Studi di Urbino Carlo Bo}}}
+		\fancyhead[R]{\footnotesize{\bf{CdL Magistrale Informatica e Innovazione Digitale}}}
+	}
+	\thispagestyle{firstpage}
+	
+	\pagestyle{fancy}
+	
+	\fancyhead{} % clear all header fields
+	\fancyhead[L]{\color{Black}{\footnotesize{\thetitle}}}
+	\fancyfoot{} % clear all footer fields
+	\fancyfoot[R]{\footnotesize{\bf{\thepage}}}
+	\fancyfoot[L]{\footnotesize{\bf{Progetto corso Machine Learning}}}
+	
+	
+	
+	\twocolumn
+	%------------------------------------------                                       
+	%                      Title
+	%------------------------------------------
+	[{
+		\maketitle
+		\thispagestyle{firstpage}
+		\title{\color{Black}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
+		%------------------------------------------                                                           
+		%                   Abstract
+		%------------------------------------------
+		\normalsize
+		\begin{tcolorbox}[  colback = WhiteSmoke,
+			,
+			width=\linewidth,
+			arc=1mm, auto outer arc,
+			]
+			\section*{Riassunto}
+			%In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
+			
+			Il lavoro svolto per l'esame consiste nel \emph{fine tuning} di un modello pre-esistente di Kraken, con l'obiettivo di ottenere un sistema in grado di leggere manoscritti in lingua italiana. Nel contesto in cui lavoro (pubblica amministrazione) esiste infatti una forte necessit\`a di strumenti OCR avanzati per la digitalizzazione di documenti storici che, a causa delle normative sulla privacy, dovranno essere distrutti dopo la scadenza dei tempi di conservazione.
+			
+			Per raggiungere questo obiettivo sono stati selezionati documenti di cui si possedevano gi\`a le trascrizioni. Le pagine sono state scannerizzate, pre-elaborate con strumenti standard (in particolare ScanTailor) e quindi utilizzate per generare il \emph{ground truth} necessario all'addestramento. I dati cos\`i ottenuti sono stati organizzati e normalizzati mediante una serie di script in Python, sviluppati appositamente per l'utilizzo con Kraken.
+			
+			Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nei documenti di riferimento, che raggiunge un'accuratezza di circa l'88\% a livello di parola su pagine simili a quelle di addestramento. Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
+		\end{tcolorbox}
+		\vspace{1.5ex}
+	}]
+	
+	
+	%------------------------------------------
+	%                   Main Matter
+	%------------------------------------------
+	
+	\section{Introduzione}
+	%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
+	
+	\subsection{Il problema}
+	
+	Il problema affrontato in questo lavoro nasce dall'esigenza di adeguare la gestione documentale dell'INRCA alle normative vigenti in materia di protezione dei dati personali e conservazione dei documenti, in particolare il Regolamento (UE) 2016/679 (GDPR) e la norma ISO/IEC 21964, che disciplina la transizione dal supporto cartaceo al digitale.
+	
+	L'INRCA, in quanto istituto sia ospedaliero sia di ricerca, \`e tenuto a garantire il rispetto di tali obblighi, in particolare per quanto riguarda la catalogazione, l'archiviazione e la successiva distruzione dei documenti sensibili. Ci\`o rende necessario disporre di strumenti OCR affidabili, in grado di supportare la digitalizzazione massiva di documenti storici, spesso contenenti anche parti manoscritte.
+	
+	Una prima analisi ha preso in considerazione alcuni software commerciali largamente diffusi:
+	\begin{itemize}
+		\item Wondershare PDFelement;
+		\item ABBYY FineReader PDF 16;
+		\item Nanonets;
+		\item Adobe Acrobat.
+	\end{itemize}
+	
+	Tali strumenti sono stati tuttavia scartati in quanto inadeguati al caso d'uso specifico. In particolare, nessuno di essi offre un supporto realmente efficace per documenti contenenti porzioni manoscritte, come ricette mediche o note su pazienti, che costituiscono una parte rilevante della documentazione sanitaria.
+	
+	In linea teorica, gli OCR basati su tecnologie di intelligenza artificiale sarebbero gli unici in grado di affrontare il carico di lavoro descritto. Tuttavia, la maggior parte delle soluzioni commerciali pi\`u avanzate richiede la trasmissione remota delle pagine da analizzare verso servizi cloud esterni, il che non consente di garantire un controllo completo sulla sicurezza delle informazioni trattate.
+	
+	Alla luce di queste considerazioni, la necessit\`a \`e quella di disporre di un sistema OCR:
+	\begin{itemize}
+		\item sufficientemente efficiente da poter essere eseguito interamente in locale;
+		\item configurabile e controllabile dagli operatori interni;
+		\item adatto a gestire manoscritti in lingua italiana.
+	\end{itemize}
+	
+	Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre-esistenti sulla base di dati di addestramento personalizzati. Altre soluzioni open source esistenti sono risultate troppo immature per un utilizzo pratico, mentre le soluzioni commerciali pi\`u mature sono risultate economicamente e tecnicamente poco adeguate al contesto.
+	
+	\subsection{Input e output}
+	
+	Gli \emph{input} del sistema sono le scannerizzazioni dei documenti da digitalizzare, sottoposte preventivamente a un processo di pulizia e normalizzazione tramite ScanTailor (correzione della centratura, ritaglio delle parti non informative, adeguamento del contrasto), mantenendo la risoluzione originale di 600 dpi.
+	
+	Gli \emph{output} considerati in questo lavoro sono file di testo semplice (\texttt{.txt}) contenenti le trascrizioni delle pagine. Ai fini specifici del progetto, non \`e stato ritenuto necessario ottenere un PDF in cui il testo sia selezionabile e sovrapposto all'immagine: l'obiettivo \`e piuttosto quello di creare, per ciascun documento, un ``pacchetto'' costituito dall'immagine scannerizzata e dalla relativa trascrizione.
+	
+	Questa organizzazione consente di:
+	\begin{itemize}
+		\item eseguire ricerche testuali sulle trascrizioni per individuare rapidamente i documenti di interesse;
+		\item visualizzare, in caso di necessit\`a, l'immagine originale della pagina, preservando l'aspetto grafico del documento.
+	\end{itemize}
+	
+	\subsection{Architettura del modello: CRNN, CTC e LSTM bidirezionali}
+	
+	Il modello utilizzato da Kraken per il riconoscimento delle righe di testo \`e una
+	\emph{Convolutional Recurrent Neural Network} (CRNN) addestrata con una funzione di costo di tipo
+	\emph{Connectionist Temporal Classification} (CTC) e dotata di strati ricorrenti LSTM
+	(\emph{Long Short-Term Memory}) bidirezionali.
+	
+	\paragraph{CRNN: combinazione di convoluzioni e ricorrenza}
+	
+	Una CRNN combina due idee principali:
+	\begin{itemize}
+		\item \textbf{Strati convoluzionali (CNN)}: estraggono automaticamente caratteristiche locali
+		dall'immagine della riga (contorni, tratti di penna, forme di lettere, ecc.). A differenza
+		di metodi basati su feature ingegnerizzate a mano, la CNN impara direttamente dal dato
+		quali pattern visivi sono utili per discriminare i caratteri.
+		\item \textbf{Strati ricorrenti}: modellano la dipendenza sequenziale lungo la riga.
+		Dopo le convoluzioni, l'immagine viene ``compressa'' in una sequenza di vettori di feature
+		(uno per ciascuna posizione orizzontale). Gli strati ricorrenti elaborano questa sequenza
+		tenendo conto del contesto a sinistra e a destra.
+	\end{itemize}
+	
+	In pratica, l'immagine di una riga viene prima ridotta e trasformata da una CNN in una sequenza
+	$\{ \mathbf{f}_1, \mathbf{f}_2, \dots, \mathbf{f}_T \}$, dove ogni $\mathbf{f}_t$ \`e un vettore
+	di feature che riassume le informazioni visive di una ``finestra'' verticale della riga. Questa
+	sequenza di feature viene poi passata a una rete ricorrente che produce, per ogni passo temporale
+	$t$, una rappresentazione arricchita dal contesto.
+	
+	\paragraph{LSTM bidirezionali}
+	
+	Per modellare le dipendenze a lungo raggio nella sequenza di feature, Kraken utilizza strati
+	ricorrenti di tipo LSTM. Le LSTM sono un'estensione delle RNN
+	classiche progettata per evitare il problema del gradiente che svanisce: introducono celle di
+	memoria e meccanismi di ``porte'' (input, output, forget) che consentono di mantenere o
+	dimenticare informazioni nel tempo in modo controllato.
+	
+	Nel caso di Kraken le LSTM sono \textbf{bidirezionali}: per ogni posizione $t$ della sequenza,
+	la rete calcola due stati:
+	\begin{itemize}
+		\item uno in direzione \emph{forward}, che processa la sequenza da sinistra a destra;
+		\item uno in direzione \emph{backward}, che processa la sequenza da destra a sinistra.
+	\end{itemize}
+	
+	Questi due stati vengono concatenati per ottenere una rappresentazione che tiene conto sia del
+	contesto precedente sia di quello successivo rispetto a ciascuna posizione. Questo \`e
+	particolarmente utile nel riconoscimento di testo manoscritto, dove l'interpretazione di un
+	carattere pu\`o dipendere fortemente dalle lettere adiacenti (ad esempio per distinguere tra
+	``m'' e ``rn'').
+	
+	\paragraph{Funzione di costo CTC (Connectionist Temporal Classification)}
+	
+	L'uscita della parte ricorrente della rete \`e, per ogni passo temporale $t$, un vettore di
+	probabilit\`a sui possibili simboli (lettere, numeri, segni di punteggiatura e un simbolo
+	speciale \emph{blank}). Il problema \`e che:
+	\begin{itemize}
+		\item non \`e nota a priori la corrispondenza esatta tra posizioni temporali e caratteri
+		della trascrizione;
+		\item la lunghezza della sequenza di output (numero di passi temporali) \`e di solito diversa
+		dalla lunghezza della trascrizione in caratteri.
+	\end{itemize}
+	
+	La funzione di costo \textbf{CTC} \`e stata introdotta proprio per gestire questo tipo di
+	situazioni. L'idea di base \`e:
+	\begin{itemize}
+		\item la rete produce una sequenza di simboli ``estesa'', che pu\`o contenere ripetizioni e
+		simboli \emph{blank};
+		\item una procedura di \emph{collasso} (\emph{collapse}) elimina i simboli \emph{blank} e
+		comprime le ripetizioni consecutive, ottenendo cos\`i una sequenza di caratteri
+		``pulita'';
+		\item la CTC definisce tutte le possibili sequenze estese che, dopo il collasso, producono
+		la trascrizione desiderata, e massimizza la probabilit\`a totale di questo insieme di
+		allineamenti.
+	\end{itemize}
+	
+	In altre parole, durante l'addestramento non \`e necessario fornire un allineamento esplicito
+	``pixel per carattere'': \`e sufficiente avere, per ogni immagine di riga, la sua
+	trascrizione completa. La CTC si occupa di sommare la probabilit\`a di tutti gli allineamenti
+	temporalmente compatibili con quella trascrizione.
+	
+	Formalmente, se indichiamo con $\mathbf{y}_t$ la distribuzione di probabilit\`a sui simboli al
+	tempo $t$ e con $\ell$ la sequenza di caratteri corretta, la CTC definisce:
+	\[
+	\mathcal{L}_{\text{CTC}} = - \log P(\ell \mid \mathbf{y}_1, \dots, \mathbf{y}_T)
+	\]
+	dove $P(\ell \mid \mathbf{y}_{1:T})$ \`e la somma delle probabilit\`a di tutte le sequenze
+	estese che collassano in $\ell$. Il calcolo di questa probabilit\`a avviene tramite un algoritmo
+	di tipo \emph{forward--backward}, simile a quello utilizzato nei modelli di Markov nascosti.
+	
+	\paragraph{Decodifica della sequenza testuale}
+	
+	In fase di inferenza, dato un output probabilistico per ogni passo temporale, si pu\`o applicare
+	una decodifica CTC semplice (ad esempio prendendo ad ogni passo il simbolo con probabilit\`a
+	massima e poi collassando ripetizioni e \emph{blank}) oppure metodi pi\`u sofisticati basati su
+	\emph{beam search} e, se disponibile, modelli linguistici di supporto.
+	
+	Nel caso considerato, Kraken utilizza la decodifica CTC per ricostruire la sequenza testuale
+	a partire dalle distribuzioni di probabilit\`a prodotte dal modello CRNN. Questo approccio
+	consente di addestrare il modello direttamente su coppie immagine--trascrizione senza richiedere
+	un allineamento manuale carattere--pixel, ed \`e particolarmente adatto al riconoscimento di
+	testo manoscritto, dove la segmentazione esplicita dei singoli caratteri \`e spesso ambigua
+	o poco affidabile.
+	
+	\subsection{Il modello di partenza}
+	
+	Per l'addestramento \`e stato utilizzato come punto di partenza il modello
+	\texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno
+	dei pi\`u adatti alla lettura di manoscritti latini tardo-medievali e di et\`a moderna. La scelta
+	\`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u
+	recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
+	
+	L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una grande variet\`a di manoscritti
+	latini possa costituire una buona base di partenza per un \emph{fine tuning} mirato sui manoscritti
+	italiani, richiedendo quindi un numero relativamente contenuto di pagine annotate manualmente.
+	
+	\section{Metodi}
+	
+	Il processo di addestramento ha seguito una metodologia articolata in pi\`u fasi, resa pi\`u complessa dal fatto che Kraken, originariamente nato come progetto open source, \`e stato successivamente integrato in iniziative istituzionali europee. Nel tempo, parte della documentazione \`e stata spostata o resa meno facilmente accessibile, e molte delle guide online puntano oggi a repository non pi\`u mantenute o a pagine che restituiscono errori 404.
+	
+	Per orientarmi in questo scenario frammentato ho fatto ampio uso di strumenti di supporto (tra cui GitHub Copilot reso disponibile dal progetto scolastico di GitHub), al fine di ricostruire una pipeline di addestramento completa e riproducibile.
+	
+	Dal punto di vista operativo, disponendo di una scheda grafica NVIDIA, ho scelto come sistema operativo Pop\!\_OS, in quanto offre un supporto immediato ai driver proprietari NVIDIA e all'uso dei CUDA core (nel mio caso versione 12). Seguendo le indicazioni raccolte, ho creato un ambiente \texttt{conda} dedicato e installato Kraken tramite \texttt{pip}, insieme alle dipendenze necessarie.
+	
+	Tutta la logica di preparazione dei dati e gestione dei file di \emph{ground truth} \`e stata implementata in Python, con l'obiettivo di ottenere uno strato di astrazione relativamente semplice da riutilizzare in contesti simili.
+	
+	\subsection{Gestione delle immagini}
+	
+	Come base di addestramento sono stati utilizzati circa 150 fogli di documenti, redatti a mano e gi\`a trascritti in precedenza. I fogli sono stati scannerizzati utilizzando una stampante da ufficio professionale con risoluzione di 600 dpi.
+	
+	Le immagini ottenute sono state quindi pre-elaborate con il software open source ScanTailor, utilizzando principalmente le impostazioni standard. In questa fase sono stati corretti:
+	\begin{itemize}
+		\item la centratura delle pagine;
+		\item il ritaglio dei margini non informativi;
+		\item il bilanciamento complessivo del contenuto visivo, mantenendo la risoluzione a 600 dpi.
+	\end{itemize}
+	
+	Successivamente, ogni pagina \`e stata suddivisa in singole righe di testo. A ciascuna riga \`e stata associata la relativa trascrizione manuale, in modo da costruire un dataset di coppie immagine--testo utilizzabile per il \emph{fine tuning}. La struttura dei file \`e stata organizzata in cartelle dedicate per le immagini e per i testi, con convenzioni di denominazione coerenti per facilitare gli abbinamenti automatici.
+	
+	\subsection{Il processo di addestramento}
+	
+	\paragraph{Generazione del \emph{ground truth} dai file \texttt{.md} riga per riga}
+	
+	Le trascrizioni manuali erano conservate in formato Markdown, scelta che rendeva pi\`u agevole la lettura umana ma richiedeva una fase di pulizia prima di poter essere utilizzate come \emph{ground truth}. Per questo \`e stato sviluppato uno script Python che, dato un insieme di immagini e i corrispondenti file \texttt{.md}, genera un file \texttt{ground\_truth.txt} nel formato atteso da \texttt{ketos} (lo strumento di training associato a Kraken) per l'addestramento.
+	
+	\textbf{Comando utilizzato}\newline\newline
+	
+	\begin{minted}{bash}
+		python3 make_gt_from_line_md.py \
+		--images_dir "./00_images" \
+		--md_dir "./01_texts" \
+		--out "gt_new/ground_truth_new.txt"
+	\end{minted}
+	
+	\textbf{Script Python per la generazione del \emph{ground truth}}\newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		make_gt_from_line_md.py
+		
+		Genera gt/ground_truth.txt associando ogni immagine (images_dir) al file markdown corrispondente
+		(md_dir) usando lo stesso stem (es: 100_page1_line001.png -> 100_page1_line001.md).
+		
+		Uso:
+		python3 make_gt_from_line_md.py --images_dir "./00_images" --md_dir "./01_texts" --out "./gt/ground_truth.txt"
+		
+		Opzioni:
+		--images_glob : pattern per le immagini (default '*.*')
+		--join_multiline : se true concatena tutte le righe del .md in una sola linea (default True)
+		--relpath : se true scrive path relative per le immagini nel GT
+		"""
+		import argparse
+		from pathlib import Path
+		import unicodedata
+		import re
+		import sys
+		
+		def strip_markdown(s):
+		# rimozioni semplici markdown, non un parser completo
+		s = re.sub(r'!\[.*?\]\(.*?\)', '', s)    # immagini
+		s = re.sub(r'\[([^\]]+)\]\([^\)]+\)', r'\1', s)  # link [text](url) -> text
+		s = re.sub(r'[`*_]{1,}', '', s)          # backticks, asterischi, underscore
+		s = re.sub(r'^\s*>\s*', '', s, flags=re.M) # blockquote
+		s = re.sub(r'\s+', ' ', s)
+		return s.strip()
+		
+		def normalize(s):
+		return unicodedata.normalize("NFC", s).strip()
+		
+		def main():
+		p = argparse.ArgumentParser()
+		p.add_argument('--images_dir', required=True)
+		p.add_argument('--md_dir', required=True)
+		p.add_argument('--out', default='gt/ground_truth.txt')
+		p.add_argument('--images_glob', default='*.*', help="glob pattern for images, default '*.*'")
+		p.add_argument('--join_multiline', action='store_true', default=True,
+		help='Concatena più linee del .md in una')
+		p.add_argument('--no-join', dest='join_multiline', action='store_false',
+		help='Non concatenare, usa solo la prima riga')
+		p.add_argument('--relpath', action='store_true', default=True,
+		help='Usa path relative per le immagini nel GT')
+		args = p.parse_args()
+		
+		images_dir = Path(args.images_dir)
+		md_dir = Path(args.md_dir)
+		outp = Path(args.out)
+		outp.parent.mkdir(parents=True, exist_ok=True)
+		
+		imgs = sorted([p for p in images_dir.glob(args.images_glob) if p.is_file()])
+		if not imgs:
+		print("Nessuna immagine trovata in", images_dir, file=sys.stderr)
+		sys.exit(1)
+		
+		missing_md = []
+		written = 0
+		with outp.open('w', encoding='utf-8') as fh:
+		for img in imgs:
+		stem = img.stem
+		md_path = md_dir / (stem + '.md')
+		if not md_path.exists():
+		# tenta anche altre estensioni comuni
+		found = None
+		for ext in ['.txt', '.mdown', '.markdown']:
+		cand = md_dir / (stem + ext)
+		if cand.exists():
+		found = cand
+		break
+		if found:
+		md_path = found
+		else:
+		missing_md.append((img.name, str(md_path)))
+		continue
+		text = md_path.read_text(encoding='utf-8')
+		# split in non-empty lines
+		lines = [normalize(strip_markdown(l)) for l in text.splitlines()
+		if l.strip()]
+		if not lines:
+		# vuoto -> segnala e salta
+		missing_md.append((img.name, f"{md_path} (vuoto)"))
+		continue
+		if args.join_multiline:
+		txt = ' '.join(lines)
+		else:
+		txt = lines[0]
+		# pulizia finale
+		txt = normalize(strip_markdown(txt))
+		# path scritto: relativo se richiesto
+		if args.relpath:
+		img_path_str = str(Path(args.images_dir)
+		.joinpath(img.name).as_posix())
+		else:
+		img_path_str = str(img.resolve())
+		# assicurati che non ci siano tab/newline nel testo
+		txt = txt.replace('\t', ' ').replace('\r', ' ').replace('\n', ' ')
+		fh.write(f"{img_path_str}\t{txt}\n")
+		written += 1
+		
+		print(f"Wrote {written} lines to {outp}")
+		if missing_md:
+		print(f"Missing or empty md for {len(missing_md)} images (showing up to 20):")
+		for m in missing_md[:20]:
+		print("  -", m[0], "expected", m[1])
+		
+		if __name__ == '__main__':
+		main()
+	\end{minted}
+	
+	\paragraph{Normalizzazione del \emph{ground truth} e creazione di \emph{splits} e charset}
+	
+	Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati.
+	
+	\begin{minted}{bash}
+		python3 validate_and_normalize_gt.py \
+		--gt "gt_new/ground_truth_new.txt" \
+		--root "." \
+		--out "gt_new/ground_truth_new_normalized.txt"
+	\end{minted}
+	
+	\textbf{Script Python per la validazione e normalizzazione del \emph{ground truth}}\newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		validate_and_normalize_gt.py
+		Verifica e normalizza un ground_truth.txt esistente.
+		
+		Uso:
+		python3 validate_and_normalize_gt.py --gt gt/ground_truth.txt --root . \
+		--out gt/ground_truth_normalized.txt --map substitutions.txt
+		
+		Output: file normalizzato e report console con problemi trovati.
+		Map file (opzionale): plain text con righe "from<TAB>to" per sostituzioni
+		(appl. prima della normalizzazione NFC).
+		"""
+		import argparse, sys, unicodedata
+		from pathlib import Path
+		from collections import defaultdict
+		
+		def load_map(path):
+		m = {}
+		if not path:
+		return m
+		for ln in open(path, encoding='utf-8'):
+		ln = ln.rstrip('\n')
+		if not ln or ln.startswith('#'):
+		continue
+		if '\t' in ln:
+		a,b = ln.split('\t',1)
+		else:
+		parts = ln.split(None,1)
+		if len(parts)!=2:
+		continue
+		a,b = parts
+		m[a] = b
+		return m
+		
+		def apply_map(s,mapping):
+		for a,b in mapping.items():
+		s = s.replace(a,b)
+		return s
+		
+		def normalize_text(s):
+		s = s.strip()
+		s = ' '.join(s.split())  # collapse whitespace
+		s = unicodedata.normalize('NFC', s)
+		return s
+		
+		def main():
+		p = argparse.ArgumentParser()
+		p.add_argument('--gt', required=True)
+		p.add_argument('--root', default='.',
+		help='Root dir to resolve image paths')
+		p.add_argument('--out', default=None,
+		help='Output normalized GT file (if omitted, no file is written)')
+		p.add_argument('--map', default=None,
+		help='Optional substitutions file (from<TAB>to)')
+		args = p.parse_args()
+		
+		mapping = load_map(args.map)
+		root = Path(args.root)
+		gt = Path(args.gt)
+		if not gt.exists():
+		print('gt file not found', gt, file=sys.stderr); sys.exit(1)
+		
+		seen_paths = set()
+		missing = []
+		empty = []
+		bad_lines = []
+		duplicates = defaultdict(int)
+		total = 0
+		normalized_lines = []
+		
+		for i, ln in enumerate(gt.read_text(encoding='utf-8').splitlines(), start=1):
+		if not ln.strip():
+		continue
+		if '\t' not in ln:
+		bad_lines.append((i, ln))
+		continue
+		path, txt = ln.split('\t',1)
+		path = path.strip()
+		txt = txt.strip()
+		txt = apply_map(txt, mapping)
+		txt = normalize_text(txt)
+		if txt == '':
+		empty.append((i,path))
+		pth = (root / path) if not Path(path).is_absolute() else Path(path)
+		if not pth.exists():
+		missing.append((i, path))
+		duplicates[path] += 1
+		seen_paths.add(path)
+		normalized_lines.append((path, txt))
+		total += 1
+		
+		# report
+		print(f"Total lines read: {total}")
+		if bad_lines:
+		print(f"Lines without tab: {len(bad_lines)} (showing up to 10):")
+		for i,ln in bad_lines[:10]:
+		print(i, ln[:200])
+		if empty:
+		print(f"Empty transcriptions: {len(empty)}")
+		if missing:
+		print(f"Missing image files: {len(missing)} (showing up to 10):")
+		for i,p in missing[:10]:
+		print(i, p)
+		dup_list = [p for p,c in duplicates.items() if c>1]
+		if dup_list:
+		print(f"Duplicate image entries: {len(dup_list)} (showing up to 10):")
+		for p in dup_list[:10]:
+		print(p, duplicates[p])
+		
+		# write normalized file if requested
+		if args.out:
+		outp = Path(args.out)
+		outp.parent.mkdir(parents=True, exist_ok=True)
+		with outp.open('w', encoding='utf-8') as fh:
+		for path,txt in normalized_lines:
+		# ensure no embedded tabs/newlines in txt
+		txt_clean = txt.replace('\t',' ').replace('\r',' ') \
+		.replace('\n',' ')
+		fh.write(f"{path}\t{txt_clean}\n")
+		print(f"Wrote normalized ground truth to {outp}")
+		
+		if __name__ == '__main__':
+		main()
+	\end{minted}
+	
+	Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato:
+	
+	\begin{minted}{bash}
+		python3 split_and_charset.py \
+		gt_new/ground_truth_new_normalized.txt \
+		--out splits_new \
+		--val 0.05 \
+		--test 0.05 \
+		--group-by-page \
+		--page-sep "_"
+	\end{minted}
+	
+	\textbf{Script Python per la creazione degli \emph{splits} e del charset}\newline\newline
+	
+	\begin{minted}{python}
+		#!/usr/bin/env python3
+		"""
+		split_and_charset.py
+		
+		Legge un ground truth (path<TAB>trascrizione per riga), normalizza le
+		trascrizioni (NFC), estrae il charset e crea i file splits
+		(train/val/test) e charset.txt.
+		
+		Esempio:
+		python3 split_and_charset.py gt/ground_truth_normalized.txt --out splits \
+		--val 0.05 --test 0.05 --group-by-page --page-sep "_"
+		"""
+		import argparse
+		import unicodedata
+		import random
+		from pathlib import Path
+		from collections import defaultdict
+		
+		def normalize_text(s):
+		return unicodedata.normalize("NFC", s).strip()
+		
+		def read_ground_truth(gt_path):
+		entries = []
+		gt_path = Path(gt_path)
+		if not gt_path.exists():
+		raise FileNotFoundError(f"Ground truth file not found: {gt_path}")
+		with gt_path.open("r", encoding="utf-8") as fh:
+		for lineno, line in enumerate(fh, 1):
+		raw = line.rstrip("\n")
+		if not raw.strip():
+		continue
+		if "\t" in raw:
+		img, txt = raw.split("\t", 1)
+		else:
+		parts = raw.split(None, 1)
+		if len(parts) != 2:
+		print(f"Warning: salto linea {lineno} (formato non riconosciuto): {raw}")
+		continue
+		img, txt = parts
+		txt = normalize_text(txt)
+		if txt == "":
+		# skip empty transcription lines by default
+		print(f"Warning: trascrizione vuota a linea {lineno}, salto.")
+		continue
+		entries.append((img, txt))
+		return entries
+		
+		def group_entries(entries, group_by_page, page_sep):
+		if not group_by_page:
+		# no grouping: return list of single-entry groups
+		return [[e] for e in entries]
+		groups = defaultdict(list)
+		for img, txt in entries:
+		stem = Path(img).stem
+		if page_sep and page_sep in stem:
+		key = stem.split(page_sep, 1)[0]
+		else:
+		# fallback: group by parent directory name
+		parent = str(Path(img).parent)
+		key = parent
+		groups[key].append((img, txt))
+		return list(groups.values())
+		
+		def split_groups(groups, val_frac, test_frac, seed):
+		random.seed(seed)
+		random.shuffle(groups)
+		total = sum(len(g) for g in groups)
+		n_val = int(total * val_frac + 0.5)
+		n_test = int(total * test_frac + 0.5)
+		n_train = total - n_val - n_test
+		
+		train, val, test = [], [], []
+		counts = {"train":0, "val":0, "test":0}
+		# greedy assign groups to keep groups intact and approximate counts
+		for g in groups:
+		# compute deficits (target - current)
+		deficits = {
+			"train": n_train - counts["train"],
+			"val": n_val - counts["val"],
+			"test": n_test - counts["test"]
+		}
+		# choose split with largest positive deficit, else train
+		pick = max(deficits.items(), key=lambda x: (x[1], x[0]))[0]
+		if pick == "train":
+		train.extend(g); counts["train"] += len(g)
+		elif pick == "val":
+		# if val would exceed target, fallback to train
+		if counts["val"] + len(g) <= n_val:
+		val.extend(g); counts["val"] += len(g)
+		else:
+		train.extend(g); counts["train"] += len(g)
+		else:
+		if counts["test"] + len(g) <= n_test:
+		test.extend(g); counts["test"] += len(g)
+		else:
+		train.extend(g); counts["train"] += len(g)
+		return train, val, test
+		
+		def write_split(out_dir, name, entries):
+		out = Path(out_dir)
+		out.mkdir(parents=True, exist_ok=True)
+		path = out / f"{name}.txt"
+		with path.open("w", encoding="utf-8") as fh:
+		for img, txt in entries:
+		fh.write(f"{img}\t{txt}\n")
+		print(f"Wrote {len(entries)} lines to {path}")
+		
+		def extract_charset(entries, out_dir):
+		chars = set()
+		for _, txt in entries:
+		chars.update(txt)
+		chars.discard("\n"); chars.discard("\r")
+		chars = sorted(chars)
+		out = Path(out_dir); out.mkdir(parents=True, exist_ok=True)
+		charset_path = out / "charset.txt"
+		with charset_path.open("w", encoding="utf-8") as fh:
+		for c in chars:
+		fh.write(c + "\n")
+		with (out / "charset_one_line.txt").open("w", encoding="utf-8") as fh:
+		fh.write("".join(chars))
+		print(f"Extracted {len(chars)} unique characters -> {charset_path}")
+		
+		def main():
+		p = argparse.ArgumentParser(description="Genera splits e charset da ground_truth")
+		p.add_argument("gt",
+		help="Percorso al file ground_truth (path<TAB>trascrizione per riga)")
+		p.add_argument("--out", "-o", default="splits", help="Cartella di output")
+		p.add_argument("--val", type=float, default=0.05,
+		help="Frazione per validation (default 0.05)")
+		p.add_argument("--test", type=float, default=0.05,
+		help="Frazione per test (default 0.05)")
+		p.add_argument("--seed", type=int, default=42,
+		help="Seed per random shuffle")
+		p.add_argument("--group-by-page", action="store_true",
+		help="Evitare contaminazione raggruppando righe della stessa pagina")
+		p.add_argument("--page-sep", default="_",
+		help="Separatore per estrarre ID pagina dal file stem "
+		"(es: '0001_01.png' -> pag=0001). Usato solo con --group-by-page")
+		args = p.parse_args()
+		
+		entries = read_ground_truth(args.gt)
+		if not entries:
+		print("Nessuna entry trovata nel ground truth. Esco.")
+		return
+		print(f"Letti {len(entries)} righe dal ground truth.")
+		groups = group_entries(entries, args.group_by_page, args.page_sep)
+		print(f"Raggruppati in {len(groups)} gruppi (group_by_page={args.group_by_page}).")
+		train, val, test = split_groups(groups, args.val, args.test, args.seed)
+		write_split(args.out, "train", train)
+		write_split(args.out, "val", val)
+		write_split(args.out, "test", test)
+		write_split(args.out, "ground_truth_all", train + val + test)
+		extract_charset(entries, args.out)
+		print("Fatto.")
+		
+		if __name__ == "__main__":
+		main()
+	\end{minted}
+	
+	Come verifica finale di questa fase, \`e stato controllato che il file prodotto fosse coerente con le attese:
+	
+	\begin{minted}{bash}
+		wc -l splits_new/*.txt
+		sed -n '1,5p' splits_new/train.txt
+	\end{minted}
+	
+	\paragraph{Filtraggio delle immagini per la lettura con \texttt{ketos}}
+	
+	Per facilitare la lettura delle immagini da parte di \texttt{ketos}, le immagini delle righe sono state ulteriormente normalizzate con \texttt{ImageMagick}:
+	
+	\begin{minted}{bash}
+		mkdir -p processed/lines
+		
+		for f in 00_images/*.png; do
+		base=$(basename "$f")
+		convert "$f" \
+		-deskew 40% \
+		-colorspace Gray \
+		-resize x64 \
+		-background white -gravity center -extent 0x64 \
+		"processed/lines/$base"
+		done
+	\end{minted}
+	
+	Una volta ottenute le immagini nel formato desiderato, i percorsi all'interno dei file di \emph{ground truth} sono stati aggiornati:
+	
+	\begin{minted}{bash}
+		sed 's|^00_images/|processed/lines/|' splits_new/train.txt > splits_new/train_proc.txt
+		sed 's|^00_images/|processed/lines/|' splits_new/val.txt   > splits_new/val_proc.txt
+		sed 's|^00_images/|processed/lines/|' splits_new/test.txt  > splits_new/test_proc.txt
+	\end{minted}
+	
+	\paragraph{Mappatura delle immagini}
+	
+	Per comodit\`a, sono stati poi estratti i soli percorsi delle immagini, da utilizzare come input diretto per \texttt{ketos}:
+	
+	\begin{minted}{bash}
+		awk -F'\t' '{print $1}' splits_new/train_proc.txt > splits_new/train_images.txt
+		awk -F'\t' '{print $1}' splits_new/val_proc.txt   > splits_new/val_images.txt
+		awk -F'\t' '{print $1}' splits_new/test_proc.txt  > splits_new/test_images.txt
+	\end{minted}
+	
+	\paragraph{Creazione dei file \emph{sidecar} compatibili con \texttt{ketos}}
+	
+	Poich\'e le versioni pi\`u recenti di Kraken delegano a \texttt{ketos} la gestione del training, \`e stato necessario generare, per ogni immagine, un file \texttt{.gt.txt} contenente la trascrizione corrispondente:
+	
+	\begin{minted}{bash}
+		python3 - <<'PY'
+		from pathlib import Path
+		
+		def write_sidecars(split_path: str):
+		p = Path(split_path)
+		created = 0
+		with p.open(encoding='utf-8') as f:
+		for i, line in enumerate(f, 1):
+		line = line.rstrip('\n')
+		if not line.strip():
+		continue
+		try:
+		img, txt = line.split('\t', 1)
+		except ValueError:
+		print(f"[WARN] line {i} without TAB in {split_path}: {line[:120]}...")
+		continue
+		img_path = Path(img)
+		if not img_path.exists():
+		print(f"[WARN] missing image at line {i}: {img_path}")
+		continue
+		sidecar = img_path.with_suffix('.gt.txt')  # es: foo.png -> foo.gt.txt
+		text = txt.strip('\r\n')
+		sidecar.write_text(text + '\n', encoding='utf-8')
+		created += 1
+		return created
+		
+		total = 0
+		for sp in ['splits_new/train_proc.txt',
+		'splits_new/val_proc.txt',
+		'splits_new/test_proc.txt']:
+		if Path(sp).exists():
+		c = write_sidecars(sp)
+		print(f"[OK] {sp}: created {c} sidecar files")
+		total += c
+		print("Total new sidecars created:", total)
+		PY
+	\end{minted}
+	
+	\textbf{Verifica dei file \emph{sidecar}}\newline
+	
+	\begin{minted}{bash}
+		python3 - <<'PY'
+		from pathlib import Path
+		missing = []
+		for lst in ['splits_new/train_images.txt',
+		'splits_new/val_images.txt',
+		'splits_new/test_images.txt']:
+		p = Path(lst)
+		if not p.exists():
+		continue
+		for l in p.read_text(encoding='utf-8').splitlines():
+		img = Path(l.strip())
+		if not img.exists():
+		continue
+		gt = img.with_suffix('.gt.txt')
+		if not gt.exists():
+		missing.append(str(img))
+		print("Total images without sidecar:", len(missing))
+		if missing[:10]:
+		print("First missing:", missing[:10])
+		PY
+	\end{minted}
+	
+	\paragraph{Training}
+	
+	Infine, il modello \`e stato addestrato con il seguente comando:
+	
+	\begin{minted}{bash}
+		ketos train \
+		-f path \
+		-i "models/Tridis_Medieval_EarlyModern.mlmodel" \
+		--resize union \
+		-q early \
+		-N 40 \
+		--min-epochs 5 \
+		--lag 10 \
+		-B 4 \
+		-r 5e-5 \
+		-o models/italian_finetuned.mlmodel_best.mlmodel \
+		-t splits_new/train_images.txt \
+		-e splits_new/val_images.txt
+	\end{minted}
+	
+	\section{Risultati sperimentali}
+	
+	In questa sezione vengono riportati i risultati ottenuti dal modello fine-tunato in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
+	
+	\subsection{Metrica utilizzata}
+	
+	Dato che il modello opera riga per riga producendo sequenze di caratteri, la valutazione naturale sarebbe basata su indicatori quali il \emph{Character Error Rate} (CER) o il \emph{Word Error Rate} (WER). Nel presente progetto, tuttavia, la metrica pi\`u rilevante per l'utente finale (l'operatore che utilizza le trascrizioni per la ricerca documentale e per adempiere agli obblighi normativi) \`e la correttezza delle singole parole.
+	
+	Per questo motivo si considera la seguente metrica intuitiva:
+	
+	\[
+	\text{Accuratezza parole} =
+	\frac{\text{\# parole riconosciute correttamente}}{\text{\# parole totali}}.
+	\]
+	
+	I valori riportati sono stimati su campioni di circa 100 parole per ciascuno scenario di test.
+	
+	Si segnala inoltre che i test condotti hanno permesso di riutilizzare parte dei documenti di verifica, poich\'e nella fase di test \`e stata disabilitata l'opzione di usare parte del campione riconosciuto come ulteriore materiale di addestramento.
+	
+	\subsection{Scenario 1: pagine usate in addestramento}
+	
+	Nel primo scenario il modello \`e stato testato su pagine appartenenti agli stessi documenti utilizzati per il training, quindi:
+	\begin{itemize}
+		\item stessa persona che ha scritto a mano tutte le pagine;
+		\item stessa tipologia di carta e impaginazione;
+		\item condizioni di scansione controllate (600 dpi e pre-elaborazione con ScanTailor).
+	\end{itemize}
+	
+	In questo caso il modello ottiene, su pi\`u campioni di circa 100 parole ciascuno, un'accuratezza compresa tra l'87\% e il 90\% (questi valori derivano dal fatto che le batterie di test effettuate hanno riportato risultati nel range descritto). Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}).
+	
+	Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dei documenti di riferimento.
+	
+	\subsection{Scenario 2: altra persona, stessa tipologia di fogli}
+	
+	Nel secondo scenario l'OCR \`e stato applicato a pagine manoscritte da una persona diversa, ma su fogli con caratteristiche simili (righe prestampate, impaginazione analoga a quella dei documenti usati in addestramento).
+	
+	In questo contesto l'accuratezza a livello di parola scende a circa il 60\% (ossia circa 60 parole corrette su 100). L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente.
+	
+	Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
+	
+	\subsection{Ruolo della qualit\`a di scansione}
+	
+	Durante i test \`e emerso che una parte consistente delle difficolt\`a non \`e dovuta soltanto alla calligrafia, ma anche alla qualit\`a della scansione. Pagine acquisite con inclinazione eccessiva, contrasto basso o sfocatura locale risultano notevolmente pi\`u difficili da riconoscere, indipendentemente dal contenuto testuale.
+	
+	Ci\`o suggerisce che, oltre al miglioramento del modello, un elemento cruciale per aumentare l'accuratezza complessiva \`e il controllo del processo di acquisizione (scelta dello scanner, impostazioni stabili, eventuale normalizzazione delle immagini prima del riconoscimento).
+	
+	\subsection{Sintesi dei risultati}
+	
+	La Tabella~\ref{tab:accuracy_scenari} riassume i risultati principali:
+	
+	\begin{center}
+		\resizebox{\columnwidth}{!}{%
+			\begin{tabular}{@{}l c@{}}
+				\hline
+				Scenario di test & Accuratezza parole \\
+				\hline
+				Stessa persona (pagine dei documenti di riferimento) & 87--90\% \\
+				Altra persona, stessa tipologia di fogli            & \(\sim 60\%\) \\
+				\hline
+			\end{tabular}%
+		}
+		\captionof{table}{Accuratezza a livello di parola in diversi scenari di test. I valori sono stimati su campioni di circa 100 parole per scenario.}
+		\label{tab:accuracy_scenari}
+	\end{center}
+	
+	\begin{figure}[h]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				ybar,
+				ymin=0,ymax=100,
+				bar width=18pt,
+				enlarge x limits=0.35,
+				ylabel={Accuratezza parole (\%)},
+				symbolic x coords={Stessa persona,Altra persona},
+				xtick=data,
+				nodes near coords,
+				nodes near coords align={vertical},
+				width=0.9\columnwidth,
+				height=0.55\textheight,
+				ylabel style={font=\small},
+				tick label style={font=\small},
+				]
+				\addplot coordinates {
+					(Stessa persona, 88)   % valore medio 87--90
+					(Altra persona, 60)    % valore medio stimato ~60
+				};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Accuratezza media a livello di parola nei due scenari di test considerati. I valori corrispondono a stime ottenute da campioni di circa 100 parole ciascuno.}
+		\label{fig:accuracy_bar}
+	\end{figure}
+	
+	Dal punto di vista applicativo, questi risultati mostrano che il modello fine-tunato, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
+	
+	\begin{figure}[h]
+		\centering
+		\begin{tikzpicture}
+			\begin{axis}[
+				xlabel={Numero di pagine annotate per il training},
+				ylabel={Accuratezza parole (\%)},
+				xmin=0, xmax=1050,
+				ymin=60, ymax=100,
+				xtick={0,50,100,150,300,1000},
+				ytick={60,70,80,90,100},
+				width=0.9\columnwidth,
+				height=0.55\textheight,
+				grid=both,
+				grid style={gray!20},
+				tick label style={font=\small},
+				xlabel style={font=\small},
+				ylabel style={font=\small},
+				]
+				\addplot[
+				color=FireBrick,
+				mark=*,
+				thick
+				] coordinates {
+					(50, 75)
+					(100, 83)
+					(150, 88)
+					(300, 92)
+					(1000, 95)
+				};
+			\end{axis}
+		\end{tikzpicture}
+		\caption{Andamento qualitativo atteso dell'accuratezza a livello di parola al crescere del numero di pagine annotate utilizzate per il training. Il punto a 150 pagine corrisponde ai risultati effettivamente ottenuti; gli altri valori sono stime indicative.}
+		\label{fig:accuracy_vs_pages}
+	\end{figure}
+	
+	\section{Conclusioni}
+	
+	I risultati ottenuti indicano che il modello fine-tunato rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
+	
+	Tuttavia, il modello non \`e ancora sufficientemente robusto da poter essere impiegato in maniera completamente automatica sulla documentazione clinica reale. In particolare:
+	\begin{itemize}
+		\item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 60\% di parole corrette);
+		\item la qualit\`a della scansione influisce in maniera significativa sui risultati;
+		\item permane la necessit\`a di una supervisione umana per la correzione degli errori.
+	\end{itemize}
+	
+	Nonostante questi limiti, il lavoro dimostra la fattibilit\`a tecnica di uno strumento OCR specializzato, eseguibile interamente in locale e potenzialmente integrabile nei flussi documentali dell'istituto. Ci\`o costituisce un elemento importante per motivare la richiesta di fondi dedicati allo sviluppo di una soluzione pi\`u completa e matura.
+	
+	\subsection{Sviluppi futuri}
+	
+	Per rendere il sistema sufficientemente affidabile in ambito produttivo saranno necessari ulteriori passaggi:
+	
+	\begin{itemize}
+		\item aumentare significativamente il numero di pagine annotate, passando dalle circa 150 attuali ad almeno un ordine di grandezza superiore (nell'ordine delle mille pagine), in modo da migliorare la capacit\`a di generalizzazione del modello;
+		\item coinvolgere il DPO aziendale per definire un protocollo di selezione, anonimizzazione e utilizzo di un campione rappresentativo di documenti clinici reali;
+		\item rafforzare la pipeline di acquisizione delle immagini, standardizzando il processo di scansione e le operazioni di pre-elaborazione;
+		\item valutare l'introduzione di un modulo di post-processing linguistico (ad esempio un correttore contestuale) che possa correggere automaticamente gli errori pi\`u frequenti sulla base del lessico e del contesto.
+	\end{itemize}
+	
+	Il progetto presentato \`e stato giudicato di interesse nazionale dal Dirigente Generale dell'INRCA, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
+	
+	%\section{Contributi}
+	%Nella sezione Contributi vanno inseriti i contributi dei vari componenti del gruppo di lavoro, ovvero chi ha ideato, sviluppato, implementato le specifiche parti del progetto. Ovviamente i contributi possono essere anche paritari, se ogni membro del gruppo ha contribuito in egual misura.
+	
+	%\printbibliography
+	
 \end{document}
