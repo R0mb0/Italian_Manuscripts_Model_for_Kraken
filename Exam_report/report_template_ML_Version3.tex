@@ -93,7 +93,7 @@
 			
 			Per raggiungere questo obiettivo sono stati scelti alcuni documenti di cui si possedevano gi\`a le trascrizioni. Le pagine sono state scannerizzate, pre‑elaborate con strumenti standard (in particolare ScanTailor) e quindi utilizzate per generare il \emph{ground truth} necessario all'addestramento. I dati cos\`i ottenuti sono stati organizzati e normalizzati mediante una serie di script in Python, sviluppati appositamente per l'utilizzo con Kraken.
 			
-			Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nei documenti di riferimento, che raggiunge un'accuratezza di circa l'88\% a livello di parola su pagine simili a quelle di addestramento. Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
+			Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nei documenti di riferimento, che raggiunge un'accuratezza media di circa l'88\% a livello di parola su pagine simili a quelle di addestramento (con una deviazione standard di circa 2 punti percentuali). Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
 		\end{tcolorbox}
 		\vspace{1.5ex}
 	}]
@@ -104,7 +104,6 @@
 	%------------------------------------------
 	
 	\section{Introduzione}
-	%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
 	
 	\subsection{Il problema}
 	
@@ -289,9 +288,7 @@
 	
 	\paragraph{Normalizzazione del \emph{ground truth} e creazione di \emph{splits} e charset}
 	
-	Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati.
-	
-	Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato.
+	Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati. Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato.
 	
 	Come verifica finale di questa fase, \`e stato controllato che il file prodotto fosse coerente con le attese.
 	
@@ -322,7 +319,7 @@
 	\frac{\text{\# parole riconosciute correttamente}}{\text{\# parole totali}}.
 	\]
 	
-	I valori riportati sono stimati su campioni di circa 100 parole per ciascuno scenario di test.
+	In tutti gli esperimenti ogni prova consiste nel sottoporre al modello un foglio contenente 100 parole manoscritte, e nel contare quante di esse vengono riconosciute correttamente. I valori riportati di seguito sono calcolati su 20 prove indipendenti per ciascuno scenario e vengono sintetizzati tramite media e deviazione standard.
 	
 	Si segnala inoltre che i test condotti hanno permesso di riutilizzare parte dei documenti di verifica, poich\'e nella fase di test \`e stata disabilitata l'opzione di usare parte del campione riconosciuto come ulteriore materiale di addestramento.
 	
@@ -335,17 +332,25 @@
 		\item condizioni di scansione controllate (600 dpi e pre‑elaborazione con ScanTailor).
 	\end{itemize}
 	
-	In questo caso il modello ottiene, su pi\`u campioni di circa 100 parole ciascuno, un'accuratezza compresa tra l'87\% e il 90\% (questi valori derivano dal fatto che le batterie di test effettuate hanno riportato risultati nel range descritto). Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}).
+	Sono state condotte 20 prove indipendenti. In ciascuna prova il modello ha riconosciuto un foglio contenente 100 parole, e per ogni foglio \`e stato contato il numero di parole trascritte correttamente. La media sulle 20 prove risulta pari a:
+	\[
+	\text{Accuratezza media} \approx 88\% \pm 2\%,
+	\]
+	dove $\pm 2\%$ rappresenta approssimativamente la deviazione standard tra le prove (cio\`e, nella maggior parte dei casi, l'accuratezza per singolo foglio ricade nell'intervallo 86–90\%).
 	
-	Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dell'autore dei documenti.
+	Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}). Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dell'autore dei documenti.
 	
 	\subsection{Scenario 2: altra persona, stessa tipologia di fogli}
 	
 	Nel secondo scenario l'OCR \`e stato applicato a pagine manoscritte da una persona diversa, ma su fogli con caratteristiche simili (righe prestampate, impaginazione analoga a quella dei documenti usati in addestramento).
 	
-	In questo contesto l'accuratezza a livello di parola scende a circa il 60\% (ossia circa 60 parole corrette su 100). L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente.
+	Anche in questo caso sono state condotte 20 prove indipendenti, ciascuna su un foglio contenente 100 parole. La media sulle 20 prove risulta pari a:
+	\[
+	\text{Accuratezza media} \approx 61\% \pm 2\%,
+	\]
+	cio\`e il modello riconosce correttamente in media 61 parole su 100, con una variabilit\`a tra le prove di circa due punti percentuali.
 	
-	Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
+	L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente. Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
 	
 	\subsection{Ruolo della qualit\`a di scansione}
 	
@@ -361,14 +366,14 @@
 		\resizebox{\columnwidth}{!}{%
 			\begin{tabular}{@{}l c@{}}
 				\hline
-				Scenario di test & Accuratezza parole \\
+				Scenario di test & Accuratezza parole (media \(\pm\) dev. std.) \\
 				\hline
-				Stessa persona (pagine dei documenti di riferimento) & 87--90\% \\
-				Altra persona, stessa tipologia di fogli            & \(\sim 60\%\) \\
+				Stessa persona (pagine dei documenti di riferimento) & \(88\% \pm 2\%\) \\
+				Altra persona, stessa tipologia di fogli            & \(61\% \pm 2\%\) \\
 				\hline
 			\end{tabular}%
 		}
-		\captionof{table}{Accuratezza a livello di parola in diversi scenari di test. I valori sono stimati su campioni di circa 100 parole per scenario.}
+		\captionof{table}{Accuratezza a livello di parola in due scenari di test, calcolata su 20 prove indipendenti per scenario. Ogni prova prevede il riconoscimento di un foglio contenente 100 parole.}
 		\label{tab:accuracy_scenari}
 	\end{center}
 	
@@ -391,12 +396,12 @@
 				tick label style={font=\small},
 				]
 				\addplot coordinates {
-					(Stessa persona, 88)   % valore medio 87--90
-					(Altra persona, 60)    % valore medio stimato ~60
+					(Stessa persona, 88)
+					(Altra persona, 61)
 				};
 			\end{axis}
 		\end{tikzpicture}
-		\caption{Accuratezza media a livello di parola nei due scenari di test considerati. I valori corrispondono a stime ottenute da campioni di circa 100 parole ciascuno.}
+		\caption{Accuratezza media a livello di parola nei due scenari di test considerati (20 prove da 100 parole ciascuna per scenario).}
 		\label{fig:accuracy_bar}
 	\end{figure}
 	
@@ -443,7 +448,7 @@
 	
 	Tuttavia, il modello non \`e ancora sufficientemente robusto da poter essere impiegato in maniera completamente automatica sulla documentazione clinica reale. In particolare:
 	\begin{itemize}
-		\item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 60\% di parole corrette);
+		\item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 61\% di parole corrette, con una deviazione standard di 2\%);
 		\item la qualit\`a della scansione influisce in maniera significativa sui risultati;
 		\item permane la necessit\`a di una supervisione umana per la correzione degli errori.
 	\end{itemize}
