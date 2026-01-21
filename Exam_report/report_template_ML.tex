@@ -42,7 +42,7 @@
 \usepackage{biblatex} %Imports biblatex package
 \addbibresource{riferimenti.bib} %Import the bibliography file
 
-\title{\color{FireBrick}\bf{Realizzazione di una applicazione OCR per manoscritti italiani mediante Kraken}}
+\title{\color{FireBrick}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
 \author[1]{\color{FireBrick}\bf{Francesco Rombaldoni}}
 %\author[2]{\color{FireBrick}\bf{Studente autore 2}}
 
@@ -76,7 +76,7 @@
 	[{
 		\maketitle
 		\thispagestyle{firstpage}
-		\title{\color{Black}\bf{Realizzazione di una applicazione OCR per manoscritti italiani mediante Kraken}}
+		\title{\color{Black}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
 		%------------------------------------------                                                           
 		%                   Abstract
 		%------------------------------------------
@@ -89,11 +89,11 @@
 			\section*{Riassunto}
 			%In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
 			
-			Il lavoro svolto per l'esame consiste nel \emph{fine tuning} di un modello pre-esistente di Kraken, con l'obiettivo di ottenere un sistema in grado di leggere manoscritti in lingua italiana. Nel contesto in cui lavoro (pubblica amministrazione) esiste infatti una forte necessit\`a di strumenti OCR avanzati per la digitalizzazione di documenti storici che, a causa delle normative sulla privacy, dovranno essere distrutti dopo la scadenza dei tempi di conservazione.
+			Il lavoro svolto per l'esame consiste nel \emph{fine tuning} di un modello pre‑esistente di Kraken, con l'obiettivo di ottenere un sistema in grado di leggere manoscritti in lingua italiana. Nel contesto in cui lavoro (pubblica amministrazione) esiste infatti una forte necessit\`a di strumenti OCR avanzati per la digitalizzazione di documenti storici che, a causa delle normative sulla privacy, dovranno essere distrutti dopo la scadenza dei tempi di conservazione.
 			
-			Per raggiungere questo obiettivo sono stati scelti alcuni documenti di cui si possedevano le trascrizioni. Le pagine sono state scannerizzate, pre-elaborate con strumenti standard (in particolare ScanTailor) e quindi utilizzate per generare il \emph{ground truth} necessario all'addestramento. I dati cos\`i ottenuti sono stati organizzati e normalizzati mediante una serie di script in Python, sviluppati appositamente per l'utilizzo con Kraken.
+			Per raggiungere questo obiettivo sono stati scelti alcuni documenti di cui si possedevano gi\`a le trascrizioni. Le pagine sono state scannerizzate, pre‑elaborate con strumenti standard (in particolare ScanTailor) e quindi utilizzate per generare il \emph{ground truth} necessario all'addestramento. I dati cos\`i ottenuti sono stati organizzati e normalizzati mediante una serie di script in Python, sviluppati appositamente per l'utilizzo con Kraken.
 			
-			Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nei documenti di riferimento, che raggiunge un'accuratezza di circa l'88\% a livello di parola su pagine simili a quelle di addestramento. Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
+			Il risultato di questo processo \`e un modello specializzato per la calligrafia italiana adottata nei documenti di riferimento, che raggiunge un'accuratezza media di circa l'88\% a livello di parola su pagine simili a quelle di addestramento (con una deviazione standard di circa 2 punti percentuali). Sebbene il modello non sia ancora sufficientemente affidabile per un utilizzo completamente automatico sulla documentazione clinica, esso costituisce una prova di concetto concreta e gi\`a utile per motivare la richiesta di risorse aggiuntive a livello di comparto, in vista dello sviluppo di uno strumento OCR conforme alle esigenze normative e organizzative dell'INRCA.
 		\end{tcolorbox}
 		\vspace{1.5ex}
 	}]
@@ -104,7 +104,6 @@
 	%------------------------------------------
 	
 	\section{Introduzione}
-	%In questa sezione dovete introdurre il problema e spiegare perch\'e \`e importante; inoltre vanno chiaramente specificati input e output e introdotto l'utilizzo del modello utilizzato per la predizione. 
 	
 	\subsection{Il problema}
 	
@@ -131,7 +130,7 @@
 		\item adatto a gestire manoscritti in lingua italiana.
 	\end{itemize}
 	
-	Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre-esistenti sulla base di dati di addestramento personalizzati. Altre soluzioni open source esistenti sono risultate troppo immature per un utilizzo pratico, mentre le soluzioni commerciali pi\`u mature sono risultate economicamente e tecnicamente poco adeguate al contesto.
+	Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre‑esistenti sulla base di dati di addestramento personalizzati. Altre soluzioni open source esistenti sono risultate troppo immature per un utilizzo pratico, mentre le soluzioni commerciali pi\`u mature sono risultate economicamente e tecnicamente poco adeguate al contesto.
 	
 	\subsection{Input e output}
 	
@@ -150,7 +149,7 @@
 	Il modello utilizzato da Kraken per il riconoscimento delle righe di testo \`e una
 	\emph{Convolutional Recurrent Neural Network} (CRNN) addestrata con una funzione di costo di tipo
 	\emph{Connectionist Temporal Classification} (CTC) e dotata di strati ricorrenti LSTM
-	(\emph{Long Short-Term Memory}) bidirezionali.
+	(\emph{Long Short‑Term Memory}) bidirezionali.
 	
 	\paragraph{CRNN: combinazione di convoluzioni e ricorrenza}
 	
@@ -175,7 +174,7 @@
 	\paragraph{LSTM bidirezionali}
 	
 	Per modellare le dipendenze a lungo raggio nella sequenza di feature, Kraken utilizza strati
-	ricorrenti di tipo LSTM (\emph{Long Short-Term Memory}). Le LSTM sono un'estensione delle RNN
+	ricorrenti di tipo LSTM. Le LSTM sono un'estensione delle RNN
 	classiche progettata per evitare il problema del gradiente che svanisce: introducono celle di
 	memoria e meccanismi di ``porte'' (input, output, forget) che consentono di mantenere o
 	dimenticare informazioni nel tempo in modo controllato.
@@ -236,27 +235,33 @@
 	
 	In fase di inferenza, dato un output probabilistico per ogni passo temporale, si pu\`o applicare
 	una decodifica CTC semplice (ad esempio prendendo ad ogni passo il simbolo con probabilit\`a
-	massima e poi collassando ripetizioni e blank) oppure metodi pi\`u sofisticati basati su
+	massima e poi collassando ripetizioni e \emph{blank}) oppure metodi pi\`u sofisticati basati su
 	\emph{beam search} e, se disponibile, modelli linguistici di supporto.
 	
 	Nel caso considerato, Kraken utilizza la decodifica CTC per ricostruire la sequenza testuale
 	a partire dalle distribuzioni di probabilit\`a prodotte dal modello CRNN. Questo approccio
-	consente di addestrare il modello direttamente su coppie immagine--trascrizione senza richiedere
-	un allineamento manuale carattere--pixel, ed \`e particolarmente adatto al riconoscimento di
+	consente di addestrare il modello direttamente su coppie immagine–trascrizione senza richiedere
+	un allineamento manuale carattere–pixel, ed \`e particolarmente adatto al riconoscimento di
 	testo manoscritto, dove la segmentazione esplicita dei singoli caratteri \`e spesso ambigua
 	o poco affidabile.
 	
 	\subsection{Il modello}
 	
-	Per l'addestramento \`e stato utilizzato come punto di partenza il modello \texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno dei pi\`u adatti alla lettura di manoscritti latini tardo-medievali e di et\`a moderna. La scelta \`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
+	Per l'addestramento \`e stato utilizzato come punto di partenza il modello
+	\texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno
+	dei pi\`u adatti alla lettura di manoscritti latini tardo‑medievali e di et\`a moderna. La scelta
+	\`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u
+	recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
 	
-	L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una grande variet\`a di manoscritti latini possa costituire una buona base di partenza per un \emph{fine tuning} mirato sui manoscritti italiani, richiedendo quindi un numero relativamente contenuto di pagine annotate manualmente.
+	L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una grande variet\`a di manoscritti
+	latini possa costituire una buona base di partenza per un \emph{fine tuning} mirato sui manoscritti
+	italiani, richiedendo quindi un numero relativamente contenuto di pagine annotate manualmente.
 	
 	\section{Metodi}
 	
 	Il processo di addestramento ha seguito una metodologia articolata in pi\`u fasi, resa pi\`u complessa dal fatto che Kraken, originariamente nato come progetto open source, \`e stato successivamente integrato in iniziative istituzionali europee. Nel tempo, parte della documentazione \`e stata spostata o resa meno facilmente accessibile, e molte delle guide online puntano oggi a repository non pi\`u mantenute o a pagine che restituiscono errori 404.
 	
-	Per orientarmi in questo scenario frammentato ho fatto ampio uso di strumenti di supporto (tra cui GitHub Copilot reso disponibili dal progetto scolastico di GitHub), al fine di ricostruire una pipeline di addestramento completa e riproducibile.
+	Per orientarmi in questo scenario frammentato ho fatto ampio uso di strumenti di supporto (tra cui GitHub Copilot, reso disponibile dal progetto scolastico di GitHub), al fine di ricostruire una pipeline di addestramento completa e riproducibile.
 	
 	Dal punto di vista operativo, disponendo di una scheda grafica NVIDIA, ho scelto come sistema operativo Pop\!\_OS, in quanto offre un supporto immediato ai driver proprietari NVIDIA e all'uso dei CUDA core (nel mio caso versione 12). Seguendo le indicazioni raccolte, ho creato un ambiente \texttt{conda} dedicato e installato Kraken tramite \texttt{pip}, insieme alle dipendenze necessarie.
 	
@@ -266,47 +271,42 @@
 	
 	Come base di addestramento sono stati utilizzati circa 150 fogli di documenti, redatti a mano e gi\`a trascritti in precedenza. I fogli sono stati scannerizzati utilizzando una stampante da ufficio professionale con risoluzione di 600 dpi.
 	
-	Le immagini ottenute sono state quindi pre-elaborate con il software open source ScanTailor, utilizzando principalmente le impostazioni standard. In questa fase sono stati corretti:
+	Le immagini ottenute sono state quindi pre‑elaborate con il software open source ScanTailor, utilizzando principalmente le impostazioni standard. In questa fase sono stati corretti:
 	\begin{itemize}
 		\item la centratura delle pagine;
 		\item il ritaglio dei margini non informativi;
 		\item il bilanciamento complessivo del contenuto visivo, mantenendo la risoluzione a 600 dpi.
 	\end{itemize}
 	
-	Successivamente, ogni pagina \`e stata suddivisa in singole righe di testo. A ciascuna riga \`e stata associata la relativa trascrizione manuale, in modo da costruire un dataset di coppie immagine-testo utilizzabile per il \emph{fine tuning}. La struttura dei file \`e stata organizzata in cartelle dedicate per le immagini e per i testi, con convenzioni di denominazione coerenti per facilitare gli abbinamenti automatici.
+	Successivamente, ogni pagina \`e stata suddivisa in singole righe di testo. A ciascuna riga \`e stata associata la relativa trascrizione manuale, in modo da costruire un dataset di coppie immagine–testo utilizzabile per il \emph{fine tuning}. La struttura dei file \`e stata organizzata in cartelle dedicate per le immagini e per i testi, con convenzioni di denominazione coerenti per facilitare gli abbinamenti automatici.
 	
 	\subsection{Il processo di addestramento}
 	
 	\paragraph{Generazione del \emph{ground truth} dai file \texttt{.md} riga per riga}
 	
-	Le trascrizioni manuali erano conservate in formato Markdown, scelta che rendeva pi\`u agevole la lettura umana ma richiedeva una fase di pulizia prima di poter essere utilizzate come \emph{ground truth}. Per questo \`e stato sviluppato uno script Python che, dato un insieme di immagini e i corrispondenti file \texttt{.md}, genera un file \texttt{ground\_truth.txt} nel formato atteso da Ketos (lo strumento di training associato a Kraken) per l'addestramento.
+	Le trascrizioni manuali erano conservate in formato Markdown, scelta che rendeva pi\`u agevole la lettura umana ma richiedeva una fase di pulizia prima di poter essere utilizzate come \emph{ground truth}. Per questo \`e stato sviluppato uno script Python che, dato un insieme di immagini e i corrispondenti file \texttt{.md}, genera un file \texttt{ground\_truth.txt} nel formato atteso da \texttt{ketos} (lo strumento di training associato a Kraken) per l'addestramento.
 	
 	\paragraph{Normalizzazione del \emph{ground truth} e creazione di \emph{splits} e charset}
 	
-	Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test, e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati.
+	Una volta generato il file di \emph{ground truth}, si procede alla sua validazione e normalizzazione, nonch\'e alla creazione degli insiemi di training, validation e test e del relativo insieme di caratteri (\emph{charset}) effettivamente presenti nei dati. Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato.
 	
-	Il passo successivo consiste nel suddividere i dati normalizzati in insiemi di training, validation e test e nell'estrarre il charset effettivamente utilizzato.
-	
-	
-	Come verifica finale di questa fase, \`e stato controllato che il file prodotto fosse coerente con le attese:
+	Come verifica finale di questa fase, \`e stato controllato che il file prodotto fosse coerente con le attese.
 	
 	\paragraph{Filtraggio delle immagini per la lettura con \texttt{ketos}}
 	
-	Per facilitare la lettura delle immagini da parte di \texttt{ketos}, le immagini delle righe sono state ulteriormente normalizzate con \texttt{ImageMagick}:
-	
-	Una volta ottenute le immagini nel formato desiderato, i percorsi all'interno dei file di \emph{ground truth} sono stati aggiornati:
+	Per facilitare la lettura delle immagini da parte di \texttt{ketos}, le immagini delle righe sono state ulteriormente normalizzate con \texttt{ImageMagick}. Una volta ottenute le immagini nel formato desiderato, i percorsi all'interno dei file di \emph{ground truth} sono stati aggiornati.
 	
 	\paragraph{Mappatura delle immagini}
 	
-	Per comodit\`a, sono stati poi estratti i soli percorsi delle immagini, da utilizzare come input diretto per \texttt{ketos}:
+	Per comodit\`a, sono stati poi estratti i soli percorsi delle immagini, da utilizzare come input diretto per \texttt{ketos}.
 	
 	\paragraph{Creazione dei file \emph{sidecar} compatibili con \texttt{ketos}}
 	
-	Poich\'e le versioni pi\`u recenti di Kraken delegano a \texttt{ketos} la gestione del training, \`e stato necessario generare, per ogni immagine, un file \texttt{.gt.txt} contenente la trascrizione corrispondente.\newline
+	Poich\'e le versioni pi\`u recenti di Kraken delegano a \texttt{ketos} la gestione del training, \`e stato necessario generare, per ogni immagine, un file \texttt{.gt.txt} contenente la trascrizione corrispondente.
 	
 	\section{Risultati sperimentali}
 	
-	In questa sezione vengono riportati i risultati ottenuti dal modello fine-tunato in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
+	In questa sezione vengono riportati i risultati ottenuti dal modello fine‑tunato in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
 	
 	\subsection{Metrica utilizzata}
 	
@@ -319,31 +319,38 @@
 	\frac{\text{\# parole riconosciute correttamente}}{\text{\# parole totali}}.
 	\]
 	
-	I valori riportati sono stimati su campioni di circa 100 parole per ciascuno scenario di test.
+	In tutti gli esperimenti ogni prova consiste nel sottoporre al modello un foglio contenente 100 parole manoscritte, e nel contare quante di esse vengono riconosciute correttamente. I valori riportati di seguito sono calcolati su 20 prove indipendenti per ciascuno scenario e vengono sintetizzati tramite media e deviazione standard.
 	
-	Si segnala inoltre che i test condotti hanno permesso di riutilizzare parte dei documenti di verifica, poiché nella fase di test è stata disabilitata l'opzione di usare parte del campione riconosciuto come ulteriore materiale di addestramento.
+	Si segnala inoltre che i test condotti hanno permesso di riutilizzare parte dei documenti di verifica, poich\'e nella fase di test \`e stata disabilitata l'opzione di usare parte del campione riconosciuto come ulteriore materiale di addestramento.
 	
 	\subsection{Scenario 1: pagine usate in addestramento}
 	
-	Nel primo scenario il modello \`e stato testato su pagine appartenenti allo stessi documenti utilizzati per il training, quindi:
-	
+	Nel primo scenario il modello \`e stato testato su pagine appartenenti agli stessi documenti utilizzati per il training, quindi:
 	\begin{itemize}
 		\item stessa persona che ha scritto a mano tutte le pagine;
 		\item stessa tipologia di carta e impaginazione;
-		\item condizioni di scansione controllate (600 dpi e pre-elaborazione con ScanTailor).
+		\item condizioni di scansione controllate (600 dpi e pre‑elaborazione con ScanTailor).
 	\end{itemize}
 	
-	In questo caso il modello ottiene, su pi\`u campioni di circa 100 parole ciascuno, un'accuratezza compresa tra l'87\% e il 90\% (Questi valori derivano dal fatto che le batterie di test effettuate hanno riportato risultati nel range descritto). Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}).
+	Sono state condotte 20 prove indipendenti. In ciascuna prova il modello ha riconosciuto un foglio contenente 100 parole, e per ogni foglio \`e stato contato il numero di parole trascritte correttamente. La media sulle 20 prove risulta pari a:
+	\[
+	\text{Accuratezza media} \approx 88\% \pm 2\%,
+	\]
+	dove $\pm 2\%$ rappresenta approssimativamente la deviazione standard tra le prove (cio\`e, nella maggior parte dei casi, l'accuratezza per singolo foglio ricade nell'intervallo 86–90\%).
 	
-	Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dell'autore dei documenti.
+	Gli errori non comportano quasi mai uno stravolgimento completo della parola, ma consistono piuttosto in sostituzioni di singole lettere graficamente simili (ad esempio \emph{``casa''} riconosciuta come \emph{``caso''}). Questi risultati indicano che il \emph{fine tuning} ha effettivamente permesso al modello di apprendere in maniera soddisfacente la calligrafia specifica dell'autore dei documenti.
 	
 	\subsection{Scenario 2: altra persona, stessa tipologia di fogli}
 	
 	Nel secondo scenario l'OCR \`e stato applicato a pagine manoscritte da una persona diversa, ma su fogli con caratteristiche simili (righe prestampate, impaginazione analoga a quella dei documenti usati in addestramento).
 	
-	In questo contesto l'accuratezza a livello di parola scende a circa il 60\% (ossia circa 60 parole corrette su 100). L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente.
+	Anche in questo caso sono state condotte 20 prove indipendenti, ciascuna su un foglio contenente 100 parole. La media sulle 20 prove risulta pari a:
+	\[
+	\text{Accuratezza media} \approx 61\% \pm 2\%,
+	\]
+	cio\`e il modello riconosce correttamente in media 61 parole su 100, con una variabilit\`a tra le prove di circa due punti percentuali.
 	
-	Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
+	L'output rimane comunque leggibile e utile come bozza iniziale, ma la quantit\`a di correzioni manuali richieste aumenta sensibilmente. Questa diminuzione di prestazioni mette in luce un aspetto atteso: con un dataset di addestramento relativamente limitato (circa 150 pagine), il modello tende a specializzarsi sulla calligrafia di riferimento e fatica a generalizzare a scritture diverse, pur mantenendo una certa capacit\`a di riconoscere la struttura delle parole.
 	
 	\subsection{Ruolo della qualit\`a di scansione}
 	
@@ -359,14 +366,14 @@
 		\resizebox{\columnwidth}{!}{%
 			\begin{tabular}{@{}l c@{}}
 				\hline
-				Scenario di test & Accuratezza parole \\
+				Scenario di test & Accuratezza parole (media \(\pm\) dev. std.) \\
 				\hline
-				Stessa persona (pagine dei documenti di riferimento)     & 87--90\% \\
-				Altra persona, stessa tipologia di fogli & \(\sim 60\%\) \\
+				Stessa persona (pagine dei documenti di riferimento) & \(88\% \pm 2\%\) \\
+				Altra persona, stessa tipologia di fogli            & \(61\% \pm 2\%\) \\
 				\hline
 			\end{tabular}%
 		}
-		\captionof{table}{Accuratezza a livello di parola in diversi scenari di test. I valori sono stimati su campioni di circa 100 parole per scenario.}
+		\captionof{table}{Accuratezza a livello di parola in due scenari di test, calcolata su 20 prove indipendenti per scenario. Ogni prova prevede il riconoscimento di un foglio contenente 100 parole.}
 		\label{tab:accuracy_scenari}
 	\end{center}
 	
@@ -389,16 +396,16 @@
 				tick label style={font=\small},
 				]
 				\addplot coordinates {
-					(Stessa persona, 88)   % valore medio 87--90
-					(Altra persona, 60)    % valore medio stimato ~60
+					(Stessa persona, 88)
+					(Altra persona, 61)
 				};
 			\end{axis}
 		\end{tikzpicture}
-		\caption{Accuratezza media a livello di parola nei due scenari di test considerati. I valori corrispondono a stime ottenute da campioni di circa 100 parole ciascuno.}
+		\caption{Accuratezza media a livello di parola nei due scenari di test considerati (20 prove da 100 parole ciascuna per scenario).}
 		\label{fig:accuracy_bar}
 	\end{figure}
 	
-	Dal punto di vista applicativo, questi risultati mostrano che il modello fine-tunato, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
+	Dal punto di vista applicativo, questi risultati mostrano che il modello fine‑tunato, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
 	
 	\begin{figure}[h]
 		\centering
@@ -437,11 +444,11 @@
 	
 	\section{Conclusioni}
 	
-	I risultati ottenuti indicano che il modello fine-tunato rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
+	I risultati ottenuti indicano che il modello fine‑tunato rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
 	
 	Tuttavia, il modello non \`e ancora sufficientemente robusto da poter essere impiegato in maniera completamente automatica sulla documentazione clinica reale. In particolare:
 	\begin{itemize}
-		\item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 60\% di parole corrette);
+		\item la generalizzazione a scritture di persone diverse risulta ancora limitata (circa il 61\% di parole corrette, con una deviazione standard di 2\%);
 		\item la qualit\`a della scansione influisce in maniera significativa sui risultati;
 		\item permane la necessit\`a di una supervisione umana per la correzione degli errori.
 	\end{itemize}
@@ -455,8 +462,8 @@
 	\begin{itemize}
 		\item aumentare significativamente il numero di pagine annotate, passando dalle circa 150 attuali ad almeno un ordine di grandezza superiore (nell'ordine delle mille pagine), in modo da migliorare la capacit\`a di generalizzazione del modello;
 		\item coinvolgere il DPO aziendale per definire un protocollo di selezione, anonimizzazione e utilizzo di un campione rappresentativo di documenti clinici reali;
-		\item rafforzare la pipeline di acquisizione delle immagini, standardizzando il processo di scansione e le operazioni di pre-elaborazione;
-		\item valutare l'introduzione di un modulo di post-processing linguistico (ad esempio, un correttore contestuale) che possa correggere automaticamente gli errori pi\`u frequenti sulla base del lessico e del contesto.
+		\item rafforzare la pipeline di acquisizione delle immagini, standardizzando il processo di scansione e le operazioni di pre‑elaborazione;
+		\item valutare l'introduzione di un modulo di post‑processing linguistico (ad esempio un correttore contestuale) che possa correggere automaticamente gli errori pi\`u frequenti sulla base del lessico e del contesto.
 	\end{itemize}
 	
 	Il progetto presentato \`e stato giudicato di interesse nazionale dal Dirigente Generale dell'INRCA, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
