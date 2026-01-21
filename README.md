@@ -44,4 +44,12 @@ This is my attempt to train a Kraken model for Italian manuscripts. I started fr
 
 </summary>
 
+![page_0001](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0001.png?raw=true)
+![page_0002](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0002.png?raw=true)
+![page_0003](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0003.png?raw=true)
+![page_0004](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0004.png?raw=true)
+![page_0005](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0005.png?raw=true)
+![page_0006](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0006.png?raw=true)
+![page_0007](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0007.png?raw=true)
+
 </details>
