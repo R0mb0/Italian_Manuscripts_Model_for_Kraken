@@ -39,15 +39,12 @@
 }
 
 \usepackage{csquotes} % consigliato con biblatex
-\usepackage{biblatex} %Imports biblatex package
-\addbibresource{riferimenti.bib} %Import the bibliography file
+\usepackage{biblatex}
+\addbibresource{riferimenti.bib}
 
 \title{\color{FireBrick}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
 \author[1]{\color{FireBrick}\bf{Francesco Rombaldoni}}
-%\author[2]{\color{FireBrick}\bf{Studente autore 2}}
-
 \affil[1]{f.rombaldoni@campus.uniurb.it}
-%\affil[2]{nome2.cognome2@campus.uniurb.it}
 
 \date{}
 
@@ -87,7 +84,6 @@
 			arc=1mm, auto outer arc,
 			]
 			\section*{Riassunto}
-			%In questa sezione va riportata una sintesi del lavoro svolto, descrivendo brevemente motivazione, metodologie adottate (ad alto livello, senza scendere nei dettagli) e risultati ottenuti.
 			
 			Il lavoro svolto per l'esame consiste nel \emph{fine tuning} di un modello pre‑esistente di Kraken, con l'obiettivo di ottenere un sistema in grado di leggere manoscritti in lingua italiana. Nel contesto in cui lavoro (pubblica amministrazione) esiste infatti una forte necessit\`a di strumenti OCR avanzati per la digitalizzazione di documenti storici che, a causa delle normative sulla privacy, dovranno essere distrutti dopo la scadenza dei tempi di conservazione.
 			
@@ -130,7 +126,7 @@
 		\item adatto a gestire manoscritti in lingua italiana.
 	\end{itemize}
 	
-	Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre‑esistenti sulla base di dati di addestramento personalizzati. Altre soluzioni open source esistenti sono risultate troppo immature per un utilizzo pratico, mentre le soluzioni commerciali pi\`u mature sono risultate economicamente e tecnicamente poco adeguate al contesto.
+	Fra le possibili alternative, la scelta \`e ricaduta su Kraken, un OCR open source basato su reti neurali profonde, che consente il \emph{fine tuning} di modelli pre‑esistenti sulla base di dati di addestramento personalizzati. La documentazione ufficiale di Kraken \cite{kraken-site} e il relativo codice sorgente \cite{kraken-github} forniscono una descrizione dell'architettura generale e degli strumenti di addestramento, ma le informazioni risultano piuttosto frammentate: parte del materiale \`e ospitato su repository non pi\`u mantenute e parte su archivi istituzionali europei (ad esempio su Zenodo \cite{kraken-zenodo}), dove alcune pagine storicamente collegate a Kraken non risultano pi\`u disponibili.
 	
 	\subsection{Input e output}
 	
@@ -248,18 +244,25 @@
 	\subsection{Il modello}
 	
 	Per l'addestramento \`e stato utilizzato come punto di partenza il modello
-	\texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, indicato dalla documentazione di Kraken come uno
-	dei pi\`u adatti alla lettura di manoscritti latini tardo‑medievali e di et\`a moderna. La scelta
-	\`e motivata dalla somiglianza geometrica e stilistica tra la grafia dei manoscritti latini pi\`u
-	recenti e quella dei manoscritti italiani novecenteschi presenti nel contesto di interesse.
+	\texttt{Tridis\_Medieval\_EarlyModern.mlmodel}, ottenuto tramite il gestore dei modelli incluso
+	in Kraken. La documentazione (oggi parzialmente reperibile solo tramite riferimenti indiretti,
+	ad esempio su archivi come Zenodo \cite{kraken-zenodo}) suggerisce che questo modello, addestrato
+	su manoscritti latini tardo‑medievali e di et\`a moderna, costituisca una buona base di partenza
+	per il riconoscimento di grafie storiche europee. L'informazione secondo cui tale modello sarebbe
+	adatto anche come base per manoscritti italiani deriva in parte da risposte fornite da strumenti
+	di intelligenza artificiale, che a loro volta facevano riferimento a lavori ospitati su repository
+	Zenodo non pi\`u direttamente accessibili.
 	
-	L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una grande variet\`a di manoscritti
-	latini possa costituire una buona base di partenza per un \emph{fine tuning} mirato sui manoscritti
-	italiani, richiedendo quindi un numero relativamente contenuto di pagine annotate manualmente.
+	La scelta di questo modello di partenza \`e motivata dalla somiglianza geometrica e stilistica tra
+	la grafia dei manoscritti latini pi\`u recenti e quella dei manoscritti italiani novecenteschi
+	presenti nel contesto di interesse. L'ipotesi di lavoro \`e che un modello gi\`a addestrato su una
+	grande variet\`a di manoscritti latini possa costituire una buona base per un \emph{fine tuning}
+	mirato sui manoscritti italiani, richiedendo quindi un numero relativamente contenuto di pagine
+	annotate manualmente.
 	
 	\section{Metodi}
 	
-	Il processo di addestramento ha seguito una metodologia articolata in pi\`u fasi, resa pi\`u complessa dal fatto che Kraken, originariamente nato come progetto open source, \`e stato successivamente integrato in iniziative istituzionali europee. Nel tempo, parte della documentazione \`e stata spostata o resa meno facilmente accessibile, e molte delle guide online puntano oggi a repository non pi\`u mantenute o a pagine che restituiscono errori 404.
+	Il processo di addestramento ha seguito una metodologia articolata in pi\`u fasi, resa pi\`u complessa dal fatto che Kraken, originariamente nato come progetto open source, \`e stato successivamente integrato in iniziative istituzionali europee. Nel tempo, parte della documentazione \`e stata spostata o resa meno facilmente accessibile, e molte delle guide online puntano oggi a repository non pi\`u mantenute o a pagine che restituiscono errori 404. La documentazione ufficiale disponibile sul sito del progetto \cite{kraken-site} e sul repository GitHub \cite{kraken-github} fornisce quindi solo una parte del quadro complessivo.
 	
 	Per orientarmi in questo scenario frammentato ho fatto ampio uso di strumenti di supporto (tra cui GitHub Copilot, reso disponibile dal progetto scolastico di GitHub), al fine di ricostruire una pipeline di addestramento completa e riproducibile.
 	
@@ -468,9 +471,22 @@
 	
 	Il progetto presentato \`e stato giudicato di interesse nazionale dal Dirigente Generale dell'INRCA, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
 	
-	%\section{Contributi}
-	%Nella sezione Contributi vanno inseriti i contributi dei vari componenti del gruppo di lavoro, ovvero chi ha ideato, sviluppato, implementato le specifiche parti del progetto. Ovviamente i contributi possono essere anche paritari, se ogni membro del gruppo ha contribuito in egual misura.
-	
-	%\printbibliography
+	\printbibliography
+	%
+	% Esempio di possibili voci in riferimenti.bib:
+	% @misc{kraken-site,
+		%   title        = {Kraken OCR -- sito ufficiale},
+		%   howpublished = {\url{https://kraken.re/main/index.html}},
+		% }
+	%
+	% @misc{kraken-github,
+		%   title        = {Kraken OCR -- repository GitHub},
+		%   howpublished = {\url{https://github.com/mittagessen/kraken}},
+		% }
+	%
+	% @misc{kraken-zenodo,
+		%   title        = {OCR models community (Zenodo)},
+		%   howpublished = {\url{https://zenodo.org/communities/ocr_models/records?q=kraken\&l=list\&p=1\&s=10\&sort=bestmatch}},
+		% }
 	
 \end{document}
