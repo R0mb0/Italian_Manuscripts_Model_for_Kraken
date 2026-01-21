@@ -42,7 +42,7 @@
 \usepackage{biblatex}
 \addbibresource{riferimenti.bib}
 
-\title{\color{FireBrick}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
+\title{\color{FireBrick}\bf{Realizzazione di una applicazione OCR per manoscritti italiani mediante Kraken}}
 \author[1]{\color{FireBrick}\bf{Francesco Rombaldoni}}
 \affil[1]{f.rombaldoni@campus.uniurb.it}
 
@@ -73,7 +73,7 @@
 	[{
 		\maketitle
 		\thispagestyle{firstpage}
-		\title{\color{Black}\bf{Realizzazione di un sistema OCR per manoscritti italiani mediante Kraken}}
+		\title{\color{Black}\bf{Realizzazione di una applicazione OCR per manoscritti italiani mediante Kraken}}
 		%------------------------------------------                                                           
 		%                   Abstract
 		%------------------------------------------
@@ -309,7 +309,7 @@
 	
 	\section{Risultati sperimentali}
 	
-	In questa sezione vengono riportati i risultati ottenuti dal modello fine‑tunato in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
+	In questa sezione vengono riportati i risultati ottenuti dal modello fine‑tuned in diversi scenari di test, con l'obiettivo di valutare sia la capacit\`a del modello di adattarsi alla specifica calligrafia su cui \`e stato addestrato, sia il suo grado di generalizzazione a scritture differenti.
 	
 	\subsection{Metrica utilizzata}
 	
@@ -317,10 +317,14 @@
 	
 	Per questo motivo si considera la seguente metrica intuitiva:
 	
+	{
+		\footnotesize
 	\[
 	\text{Accuratezza parole} =
 	\frac{\text{\# parole riconosciute correttamente}}{\text{\# parole totali}}.
 	\]
+	}
+	
 	
 	In tutti gli esperimenti ogni prova consiste nel sottoporre al modello un foglio contenente 100 parole manoscritte, e nel contare quante di esse vengono riconosciute correttamente. I valori riportati di seguito sono calcolati su 20 prove indipendenti per ciascuno scenario e vengono sintetizzati tramite media e deviazione standard.
 	
@@ -408,7 +412,7 @@
 		\label{fig:accuracy_bar}
 	\end{figure}
 	
-	Dal punto di vista applicativo, questi risultati mostrano che il modello fine‑tunato, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
+	Dal punto di vista applicativo, questi risultati mostrano che il modello fine‑tuned, pur non essendo ancora utilizzabile in modo completamente automatico, \`e gi\`a in grado di ridurre in misura significativa il carico di trascrizione manuale per la calligrafia su cui \`e stato addestrato. Inoltre, i test su una seconda persona confermano che, con un aumento del numero di pagine annotate e un maggiore controllo sulla qualit\`a di scansione, \`e realistico puntare a livelli di accuratezza pi\`u elevati anche per popolazioni di scriventi pi\`u ampie.
 	
 	\begin{figure}[h]
 		\centering
@@ -447,7 +451,7 @@
 	
 	\section{Conclusioni}
 	
-	I risultati ottenuti indicano che il modello fine‑tunato rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
+	I risultati ottenuti indicano che il modello fine‑tuned rappresenta una prima base operativa per l'introduzione di un OCR per manoscritti italiani all'interno dell'INRCA. Nel caso della calligrafia specifica utilizzata per l'addestramento, il sistema raggiunge un'accuratezza a livello di parola prossima al 90\%, consentendo di ridurre in modo sensibile il tempo necessario per produrre trascrizioni utilizzabili.
 	
 	Tuttavia, il modello non \`e ancora sufficientemente robusto da poter essere impiegato in maniera completamente automatica sulla documentazione clinica reale. In particolare:
 	\begin{itemize}
@@ -469,7 +473,7 @@
 		\item valutare l'introduzione di un modulo di post‑processing linguistico (ad esempio un correttore contestuale) che possa correggere automaticamente gli errori pi\`u frequenti sulla base del lessico e del contesto.
 	\end{itemize}
 	
-	Il progetto presentato \`e stato giudicato di interesse nazionale dal Dirigente Generale dell'INRCA, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
+	Il progetto presentato \`e stato giudicato di interesse nazionale dal mio dirigente di comparto, aprendo la possibilit\`a di richiedere risorse dedicate, inclusa eventualmente l'assunzione a tempo determinato di personale con il compito specifico di preparare i dati di addestramento. In questa prospettiva, il lavoro svolto costituisce un primo tassello concreto verso la realizzazione di uno strumento OCR conforme sia alle esigenze operative sia agli obblighi normativi in materia di protezione dei dati e conservazione della documentazione storica.
 	
 	\printbibliography
 	%
