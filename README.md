@@ -53,3 +53,9 @@ This is my attempt to train a Kraken model for Italian manuscripts. I started fr
 ![page_0007](https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken/blob/main/Readme_Imgs/0007.png?raw=true)
 
 </details>
+
+  <picture>
+    <source media="(prefers-color-scheme: dark)"srcset="https://github.com/R0mb0/Not_made_by_AI/blob/main/Badge/SVG/NotMadeByAIDark.svg">
+    <source media="(prefers-color-scheme: light)"srcset="https://github.com/R0mb0/Not_made_by_AI/blob/main/Badge/SVG/NotMadeByAILight.svg">
+    <img alt="Not made by AI" src="https://github.com/R0mb0/Not_made_by_AI/blob/main/Badge/SVG/NotMadeByAIDefault.svg">
+  </picture>
