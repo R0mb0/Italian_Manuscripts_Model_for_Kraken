@@ -1,0 +1,9 @@
+cff-version: 1.2.0
+message: "If you use these documents, please cite it as below."
+authors:
+- family-names: "Rombaldoni"
+  given-names: "Francesco"
+version: 1.0.0
+doi: 10.5281/zenodo.1234
+date-released: 2026-01-26
+url: "https://github.com/R0mb0/Italian_Manuscripts_Model_for_Kraken"
